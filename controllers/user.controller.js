@@ -36,6 +36,33 @@ const UserController = {
     return dfrd.promise;
   },
 
+  /**
+  create: function create(req) {
+    let bundle = req.body;
+    const email = bundle.email;
+    const password = bundle.password;
+    const employeeId = bundle.employeeId;
+    return Encryption.encrypt(password).then((hash) => {
+      let user = {
+        email: email,
+        password: hash,
+        employeeId: employeeId,
+        isActivated: false // initially set to false
+      };
+      // create a user with the encrypted hash as password
+      return User.create(user)
+          .then((res) => {
+            // send email to user specifying they should reset password.
+            let text = `Password reset.`,
+                html = `Password reset. Go to ${clientURL}/#/password-reset?hash=${hash} to reset password.`; //auth == hash
+            Emailer.send(`${testEmail}`, 'Password Reset', text, html); // replace testEmail with email
+            // also include the hash as verification
+            return res;
+          }).catch(handleError);
+    });
+  },
+   **/
+
   findById: function findById(req) {
     return User.findOne({_id: req.params.id})
         .exec()
