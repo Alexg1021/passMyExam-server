@@ -46,14 +46,14 @@ app.use(cors({
 // app.use('/users', users);
 
 app.use(passport.initialize());
-
-app.use('/', expressJWT({
-  secret: process.env.JWT_SECRET
-}).unless({
-  // Doesn't protect /api/v1/auth (except for /auth/renew) or /api/v1/version
-  //path: /\/api\/login(?!\/renew)/
-  path: [/\/api\/login(?!\/renew)/, /\/api\/user\/reset-password/, /\/api\/user\/forgot-password/]
-}));
+//
+// app.use('/', expressJWT({
+//   secret: process.env.JWT_SECRET
+// }).unless({
+//   // Doesn't protect /api/v1/auth (except for /auth/renew) or /api/v1/version
+//   //path: /\/api\/login(?!\/renew)/
+//   path: [/\/api\/login(?!\/renew)/, /\/api\/user\/reset-password/, /\/api\/user\/forgot-password/]
+// }));
 
 APIRoutes(app);
 

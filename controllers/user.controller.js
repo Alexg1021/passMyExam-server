@@ -7,11 +7,18 @@ import path from 'path';
 import User from '../models/user';
 import mongoose from 'mongoose';
 import q from 'q';
+import Encryption from '../encryption/password-encryption';
 
 mongoose.Promise = Promise;
 
 function handleError(err) {
+  console.log('inside handleError');
   return err;
+}
+
+function validPassword(pass){
+  let re = new RegExp("^(?=.*[A-Za-z])(?=.*\d)([a-zA-Z0-9]){8,15}$");
+  return !!re.test(pass);
 }
 
 const UserController = {
@@ -25,15 +32,57 @@ const UserController = {
         .catch(handleError);
   },
 
-  create: function create(req) {
-    const dfrd = q.defer();
-    const user = new User(req.body);
+  create: function create(req, res) {
+    const email = req.body.email;
+    const password = req.body.password;
 
-    user.save(function (err){
-      if (err) return dfrd.reject(err);
-      dfrd.resolve(user);
-      });
-    return dfrd.promise;
+    //Grab the email and check to see if it does not already exist
+    return User.findOne({email: email})
+        .exec()
+        .then((isUser)=>{
+          let errObject = {message: null, valid: null};
+          if(isUser){
+            errObject = {valid:false, message: 'A user by this email already exists!'};
+            return errObject;
+          }
+          //Grab the password and validate it to make sure it has the right characters
+          else if(validPassword(password) == false){
+            errObject = {valid:false, message: 'The password does not contain the valid characters'};
+            return errObject;
+          }else{
+            //if it passes then encrypt the password
+            Encryption.encrypt(password)
+                .then((hash)=>{
+                  console.log('hashed pass: ', hash);
+                  let newUser = {email: email, password: hash};
+                  let user = new User(newUser);
+
+                  user.save(function(err){
+                    console.log(err);
+                    console.log('saved user');
+                    return errObject;
+                  })
+                });
+            /**
+            user.save(function (err) {
+              if (emailUser) {
+                var mg = new Mailgun(process.env.MAILGUN);
+                mg.sendText('admin@westhillsfinancial.com', [user.email],
+                    "You've been added to the Farm Foreman Application",
+                    'You have been added as a user to the Farm Foreman application.  Your password is ' + generatedPassword +
+                    '.  You can login to the application at ' + process.env.APPURL + '.  Thanks!', 'noreply@westhillsfinancial.com',
+                    {}, function (err) {
+                      if (err) return res.status(400).json(err);
+                      res.json(user);
+                    });
+              } else {
+                res.json(user);
+              }
+            });
+            **/
+
+          }
+        });
   },
 
   /**
