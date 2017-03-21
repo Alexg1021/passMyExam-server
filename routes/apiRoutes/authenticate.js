@@ -56,8 +56,11 @@ router.post('/login', (req, res) => {
 });
 
 router.post('/new-user', (req, res) =>{
-  const email = req.body.email;
+
   const password = req.body.password;
+  const email = req.body.email;
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
 
   return User.findOne({email: email})
       .then((isUser)=>{
@@ -70,7 +73,8 @@ router.post('/new-user', (req, res) =>{
         }
         Encryption.encrypt(password)
             .then((hash)=>{
-              let user = new User({email: email, password:hash});
+
+              let user = new User({email: email, password:hash, firstName: firstName, lastName: lastName});
               return user.save(function(data){
 
                 let mailgun = new Mailgun({apiKey:process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
@@ -97,7 +101,7 @@ router.post('/new-user', (req, res) =>{
                     //We pass the variable "email" from the url parameter in an object rendered by Jade
                     // res.render('submitted', { email : req.params.mail });
                     //omit the users new password
-                    user.password = '';
+                    user.password = '=P';
                     res.status(200).json(user);
                   }
                 });
