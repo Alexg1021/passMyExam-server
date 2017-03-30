@@ -63,24 +63,6 @@ const UserController = {
                     return errObject;
                   })
                 });
-            /**
-            user.save(function (err) {
-              if (emailUser) {
-                var mg = new Mailgun(process.env.MAILGUN);
-                mg.sendText('admin@westhillsfinancial.com', [user.email],
-                    "You've been added to the Farm Foreman Application",
-                    'You have been added as a user to the Farm Foreman application.  Your password is ' + generatedPassword +
-                    '.  You can login to the application at ' + process.env.APPURL + '.  Thanks!', 'noreply@westhillsfinancial.com',
-                    {}, function (err) {
-                      if (err) return res.status(400).json(err);
-                      res.json(user);
-                    });
-              } else {
-                res.json(user);
-              }
-            });
-            **/
-
           }
         });
   },
@@ -119,6 +101,18 @@ const UserController = {
           return res;
         }).catch(handleError);
   },
+
+
+  findByEmail: function findByEmail(req) {
+    return User.findOne({email: req.email})
+        .select('+password')
+        .exec()
+        .then((res) => {
+          return res;
+        }).catch(handleError);
+  },
+
+
 
   update: function update(req) {
     return User.findOne({_id: req.params.id})

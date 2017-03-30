@@ -9,8 +9,6 @@ import User from '../../models/user';
 import Mailgun from 'mailgun-js';
 const router = express.Router();
 
-
-
 function validPassword(pass){
   let re = new RegExp("^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{8,15}$");
   return !!re.test(pass);
@@ -18,37 +16,40 @@ function validPassword(pass){
 
 
 router.post('/login', (req, res) => {
-  UserController.findByEmail(req)
+  UserController.findByEmail(req.body)
       .then((user) => {
         if (user != null) {
-          //current users hashed password
           let hashedPassword = user.password;
-          console.log( 'user: ' + user);
-          if (user.isActivated) {
+          //current users hashed password
+
+          if (user.isActive) {
             // login as normal
             // check if the password from request matches the encrypted hashedPassword
             Encryption.check(req.body.password, hashedPassword).then((resp) => {
-              console.log(resp);
               if (resp) {
                 user = user.toJSON();
                 res.json({
                   token: jwt.sign(user, process.env.JWT_SECRET),
-                  employee: user.Employee
+                  isAdmin: user.isAdmin
                 });
               } else {
-                res.json({error: 'Authentication error!'});
+                res.json({status: 400, error: 'Authentication error!'});
+                res.sendStatus(400);
               }
             });
           } else {
-            // user is not activated yet. redirect to reset password screen on the frontend
+            // user is not activated.
             res.json({
-              error: 'First Login Attempt! Need password reset!',
-              token:hashedPassword,
-              resetPath:`/password-reset?hash=${hashedPassword}`
+              status: 400,
+              error: 'User is no longer Active. Please contact Pass-myExam to correct the issue!'
+              // resetPath:`/password-reset?hash=${hashedPassword}`
             });
+            res.sendStatus(400);
           }
         } else {
-          res.json({error: 'Authentication error! User not found!'});
+          //Authentication Error: trouble logging in
+          res.json({status: 400, error: 'Authentication error! User not found!'});
+          res.sendStatus(400);
         }
       }, (err) => {
         res.json(err);
@@ -65,11 +66,11 @@ router.post('/new-user', (req, res) =>{
   return User.findOne({email: email})
       .then((isUser)=>{
         if(isUser){
-          res.status(400);
-         return res.json({error:'User already exists'});
+          res.json({status: 400, error:'User already exists'});
+          res.sendStatus(400);
         }else if(!validPassword(password)){
-          res.status(400);
-        return res.json({error:'Invalid Password'});
+          res.json({status: 400, error:'Invalid Password'});
+          res.sendStatus(400);
         }
         Encryption.encrypt(password)
             .then((hash)=>{
@@ -91,9 +92,10 @@ router.post('/new-user', (req, res) =>{
 
                 //Invokes the method to send emails given the above data with the helper library
                 mailgun.messages().send(sendData, function (err, body) {
+                  // console.log(`this is the error ${err} and this is the body: ${body}`);
                   //If there is an error, render the error page
                   if (err) {
-                    res.render('error', { error : err});
+                    res.render('error', {error : err});
                   }
                   //Else we can greet    and leave
                   else {
@@ -101,14 +103,14 @@ router.post('/new-user', (req, res) =>{
                     //We pass the variable "email" from the url parameter in an object rendered by Jade
                     // res.render('submitted', { email : req.params.mail });
                     //omit the users new password
-                    user.password = '=P';
-                    res.status(200).json(user);
+                    user.password = '¯|_(ツ)_/¯';
+                    res.json(user);
+                    res.status(200);
                   }
                 });
-
               }, function(err){
-                  res.status(400);
-                  res.json({error: `There was an error saving the user: ${err}`});
+                res.json({status: 500, error: `There was an error saving the user: ${err}`});
+                res.status(500);
               });
             });
       });

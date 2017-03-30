@@ -41,7 +41,7 @@ app.use(cors({
   origin: corsHostnameWhitelist
 }));
 
-//
+
 // app.use('/', index);
 // app.use('/users', users);
 
