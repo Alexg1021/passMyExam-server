@@ -136,6 +136,20 @@ const UserController = {
         }).catch(handleError)
   },
 
+
+  confirmEmail: function confirmEmail(req) {
+
+  return User.findOne({_id: req.params.id})
+      .exec()
+      .then((User) => {
+        return User.update(req.body)
+            .then((res) => {
+              return res;
+            })
+      }).catch(handleError);
+},
+
+
 };
 
 export default UserController;

@@ -27,10 +27,17 @@ router.post('/login', (req, res) => {
             // check if the password from request matches the encrypted hashedPassword
             Encryption.check(req.body.password, hashedPassword).then((resp) => {
               if (resp) {
-                user = user.toJSON();
+                let userName = user.firstName + ' ' + user.lastName;
+                var data = {
+                  name: userName,
+                  _id: user._id,
+                  isAdmin: user.isAdmin,
+                  emailConfirmed:user.emailConfirmed,
+                  email: user.email
+                };
+
                 res.json({
-                  token: jwt.sign(user, process.env.JWT_SECRET),
-                  isAdmin: user.isAdmin
+                  token: jwt.sign(data, process.env.JWT_SECRET)
                 });
               } else {
                 res.json({status: 400, error: 'Authentication error!'});
@@ -48,7 +55,7 @@ router.post('/login', (req, res) => {
           }
         } else {
           //Authentication Error: trouble logging in
-          res.json({status: 400, error: 'Authentication error! User not found!'});
+          res.json({status: 400, error: 'Authentication error! The user credentials were not found! Please try again.'});
           res.sendStatus(400);
         }
       }, (err) => {
@@ -66,10 +73,10 @@ router.post('/new-user', (req, res) =>{
   return User.findOne({email: email})
       .then((isUser)=>{
         if(isUser){
-          res.json({status: 400, error:'User already exists'});
+          res.json({status: 400, error:'A user by this email already exists!'});
           res.sendStatus(400);
         }else if(!validPassword(password)){
-          res.json({status: 400, error:'Invalid Password'});
+          res.json({status: 400, error:'We\'re Sorry but this password will not work. Please try a different password.'});
           res.sendStatus(400);
         }
         Encryption.encrypt(password)
@@ -77,6 +84,17 @@ router.post('/new-user', (req, res) =>{
 
               let user = new User({email: email, password:hash, firstName: firstName, lastName: lastName});
               return user.save(function(data){
+
+                /* User Setup for Token Response */
+
+                 let userName = user.firstName + ' ' + user.lastName;
+                 const newUser= {
+                 name: userName,
+                 _id: user._id,
+                 isAdmin: user.isAdmin,
+                 emailConfirmed:user.emailConfirmed,
+                 email: user.email
+                 };
 
                 let mailgun = new Mailgun({apiKey:process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
 
@@ -103,9 +121,9 @@ router.post('/new-user', (req, res) =>{
                     //We pass the variable "email" from the url parameter in an object rendered by Jade
                     // res.render('submitted', { email : req.params.mail });
                     //omit the users new password
-                    user.password = '¯|_(ツ)_/¯';
-                    res.json(user);
-                    res.status(200);
+                    res.json({
+                      token: jwt.sign(newUser, process.env.JWT_SECRET)
+                    });
                   }
                 });
               }, function(err){
