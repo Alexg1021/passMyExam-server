@@ -27,9 +27,10 @@ router.post('/login', (req, res) => {
             // check if the password from request matches the encrypted hashedPassword
             Encryption.check(req.body.password, hashedPassword).then((resp) => {
               if (resp) {
-                let userName = user.firstName + ' ' + user.lastName;
+                // let userName = user.firstName + ' ' + user.lastName;
                 var data = {
-                  name: userName,
+                  firstName: user.firstName,
+                  lastName: user.lastName,
                   _id: user._id,
                   isAdmin: user.isAdmin,
                   emailConfirmed:user.emailConfirmed,
@@ -88,13 +89,15 @@ router.post('/new-user', (req, res) =>{
                 /* User Setup for Token Response */
 
                  let userName = user.firstName + ' ' + user.lastName;
-                 const newUser= {
-                 name: userName,
+                 let newUser= {
+                 firstName: user.firstName,
+                 lastName: user.lastName,
                  _id: user._id,
                  isAdmin: user.isAdmin,
                  emailConfirmed:user.emailConfirmed,
                  email: user.email
                  };
+
 
                 let mailgun = new Mailgun({apiKey:process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
 
