@@ -87,4 +87,15 @@ router.route('/purchase-exam/:id')
           })
     });
 
+//route for saving purchased exams
+router.route('/get-my-exams/:id')
+    .get((req, res)=> {
+      UserController.getMyExams(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+          })
+    });
+
 export default router;

@@ -159,6 +159,22 @@ const UserController = {
                return res;
              }).catch(handleError);
         })
+  },
+
+  getMyExams: function getMyExams(req){
+    return User.findOne({_id: req.params.id})
+        .populate({
+          path:'examsPurchased',
+          populate:{
+            path:'examType'
+          }
+        })
+        .exec()
+        .then((res)=>{
+          console.log(res);
+          return res.examsPurchased;
+        })
+        .catch(handleError);
   }
 
 };
