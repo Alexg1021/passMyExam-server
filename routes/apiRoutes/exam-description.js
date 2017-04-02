@@ -2,6 +2,7 @@
 
 import express from 'express';
 import ExamDescriptionController from '../../controllers/exam-description.controller';
+import UserController from '../../controllers/user.controller';
 import fs from 'fs';
 
 const router = express.Router();
@@ -48,4 +49,5 @@ router.route('/:id')
             res.json(err);
           });
     });
+
 export default router;

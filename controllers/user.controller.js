@@ -138,7 +138,6 @@ const UserController = {
 
 
   confirmEmail: function confirmEmail(req) {
-
   return User.findOne({_id: req.params.id})
       .exec()
       .then((User) => {
@@ -149,6 +148,18 @@ const UserController = {
       }).catch(handleError);
 },
 
+
+  purchaseExam: function purchaseExam(req) {
+    return User.findOne({_id: req.params.id})
+        .exec()
+        .then(function (user) {
+          user.examsPurchased.push(req.body.examDescriptionId);
+         return user.save()
+             .then(function(res){
+               return res;
+             }).catch(handleError);
+        })
+  }
 
 };
 

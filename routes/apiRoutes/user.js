@@ -75,4 +75,16 @@ router.route('/confirm-email/:id')
           })
     });
 
+
+//route for saving purchased exams
+router.route('/purchase-exam/:id')
+    .put((req, res)=> {
+      UserController.purchaseExam(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+          })
+    });
+
 export default router;
