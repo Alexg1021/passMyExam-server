@@ -78,7 +78,7 @@ router.route('/confirm-email/:id')
 
 //route for saving purchased exams
 router.route('/purchase-exam/:id')
-    .put((req, res)=> {
+    .post((req, res)=> {
       UserController.purchaseExam(req)
           .then((data)=> {
             res.json(data);

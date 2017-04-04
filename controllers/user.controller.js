@@ -9,6 +9,8 @@ import mongoose from 'mongoose';
 import q from 'q';
 import Encryption from '../encryption/password-encryption';
 
+import ExamController from './exam.controller';
+
 mongoose.Promise = Promise;
 
 function handleError(err) {
@@ -150,15 +152,27 @@ const UserController = {
 
 
   purchaseExam: function purchaseExam(req) {
-    return User.findOne({_id: req.params.id})
-        .exec()
-        .then(function (user) {
-          user.examsPurchased.push(req.body.examDescriptionId);
-         return user.save()
-             .then(function(res){
-               return res;
-             }).catch(handleError);
-        })
+    //Create the new exam with examdescriptionId and userId
+    //Return the created exam and push the id into the user purchased exams array
+    //return the data
+
+    let data = {
+      examDescription:req.body.examDescriptionId,
+      userId:req.params.id
+    };
+    return ExamController.create(data)
+        .then((exam)=>{
+          return User.findOne({_id: req.params.id})
+              .then((user)=>{
+                user.examsPurchased.push(exam._id);
+                return user.save()
+                    .then((res)=>{
+                      return res;
+                    })
+                    .catch(handleError);
+              });
+        });
+
   },
 
   getMyExams: function getMyExams(req){
@@ -166,12 +180,14 @@ const UserController = {
         .populate({
           path:'examsPurchased',
           populate:{
-            path:'examType'
+            path:'examDescription',
+            populate:{
+              path:'examType'
+            }
           }
         })
         .exec()
         .then((res)=>{
-          console.log(res);
           return res.examsPurchased;
         })
         .catch(handleError);

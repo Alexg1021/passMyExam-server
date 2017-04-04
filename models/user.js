@@ -17,7 +17,7 @@ var UserSchema = new mongoose.Schema({
     token: String,
     exp: {type: Date, default: Date.now}
   },
-  examsPurchased: [{type: mongoose.Schema.Types.ObjectId, ref: 'ExamDescription'}],
+  examsPurchased: [{type: mongoose.Schema.Types.ObjectId, ref: 'Exam'}],
   isActive: {type: Boolean, default: true},
   emailConfirmed: {type: Boolean, default: false},
   createdAt: {type: Date, default: Date.now},
