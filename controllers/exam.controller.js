@@ -26,7 +26,7 @@ const ExamController = {
 
   create: function create(req) {
     const dfrd = q.defer();
-    const exam = new Exam(req.body);
+    const exam = new Exam(req);
 
     exam.save(function (err){
       if (err) return dfrd.reject(err);
