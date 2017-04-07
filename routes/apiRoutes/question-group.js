@@ -21,6 +21,7 @@ router.route('/')
             res.json(data);
           },(err) =>{
             res.json(err);
+            res.status(400);
           });
     });
 

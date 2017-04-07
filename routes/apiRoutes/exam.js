@@ -48,4 +48,17 @@ router.route('/:id')
             res.json(err);
           });
     });
+
+//route for populating an exam with test questions
+router.route('/generate-new-exam/:id')
+    .put((req, res)=> {
+      ExamController.generateNewExam(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+          })
+    });
+
+
 export default router;
