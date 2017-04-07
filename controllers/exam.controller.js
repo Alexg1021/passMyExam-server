@@ -87,7 +87,6 @@ const ExamController = {
               //  Array of questions returned
               //  loop through questions and push each one into exam.questionGroup array until counter stops
                 for(var i = 0; i < exam.examDescription.totalQuestions; i++){
-                  console.log('inside the loop ', i);
                   exam.questionGroups.push(questions[i]._id);
                 }
 
