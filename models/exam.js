@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 var ExamSchema = new mongoose.Schema({
   title: String,
   examDescription: {type: mongoose.Schema.Types.ObjectId, ref: 'ExamDescription'},
-  questionGroups: [{type: mongoose.Schema.Types.ObjectId, ref: 'QuestionsGroup'}],
+  questionGroups: [{type: mongoose.Schema.Types.ObjectId, ref: 'QuestionGroup'}],
   startTime: {type: Date, default: null},
   pauseTime: [{type: Date, default: null}],
   restartTime: [{type: Date, default: null}],
