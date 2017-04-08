@@ -1,14 +1,14 @@
 "use strict";
 
 import express from 'express';
-import ExamController from '../../controllers/exam.controller';
+import TestQuestionController from '../../controllers/test-question.controller';
 import fs from 'fs';
 
 const router = express.Router();
 
 router.route('/')
     .get((req, res)=>{
-      ExamController.getAll()
+      TestQuestionController.getAll()
           .then((data)=>{
             res.json(data);
           }, (err) => {
@@ -16,24 +16,25 @@ router.route('/')
           });
     })
     .post((req, res) => {
-      ExamController.create(req)
+      TestQuestionController.create(req)
           .then((data) => {
             res.json(data);
           },(err) =>{
             res.json(err);
+            res.status(400);
           });
     });
 
 router.route('/:id')
     .get((req, res) => {
-      ExamController.findById(req).then((data)=>{
+      TestQuestionController.findById(req).then((data)=>{
         res.json(data);
       }, (err) => {
         res.json(err);
       })
     })
     .put((req, res) => {
-      ExamController.update(req)
+      TestQuestionController.update(req)
           .then((data) => {
             res.json(data);
           }, (err) => {
@@ -41,25 +42,11 @@ router.route('/:id')
           })
     })
     .delete((req, res) => {
-      ExamController.destroy(req)
+      TestQuestionController.destroy(req)
           .then((data) => {
             res.json(data);
           }, (err) => {
             res.json(err);
           });
     });
-
-//route for populating an exam with test questions
-router.route('/generate-new-exam/:id')
-    .put((req, res)=> {
-      ExamController.generateNewExam(req)
-          .then((data)=> {
-            res.json(data);
-          }, (err)=> {
-            res.json(err);
-            res.status(400);
-          })
-    });
-
-
 export default router;

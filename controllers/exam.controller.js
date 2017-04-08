@@ -5,6 +5,7 @@ import _ from 'lodash';
 import path from 'path';
 import Exam from '../models/exam';
 import QuestionGroup from '../models/question-group';
+import TestQuestionController from '../controllers/test-question.controller';
 import mongoose from 'mongoose';
 import q from 'q';
 
@@ -44,7 +45,15 @@ const ExamController = {
             path:'examType'
           }
         })
-        .populate('questionGroups')
+        .populate({
+          path: 'testQuestions',
+          populate:{
+            path:'questionGroup',
+            populate:{
+              path:'answers'
+            }
+          }
+        })
         .exec()
         .then((res) => {
           return res;
@@ -75,7 +84,6 @@ const ExamController = {
 
 
   generateNewExam: function generateNewExam(req) {
-
     //Load the required Exam with the examDescription
     return Exam.findOne({_id: req.params.id})
         .populate('examDescription')
@@ -86,16 +94,28 @@ const ExamController = {
               .then((questions)=>{
               //  Array of questions returned
               //  loop through questions and push each one into exam.questionGroup array until counter stops
+                let testQuestions = [];
                 for(var i = 0; i < exam.examDescription.totalQuestions; i++){
-                  exam.questionGroups.push(questions[i]._id);
+                  let testQuestion = {
+                    questionGroup:questions[i]._id,
+                    correctAnswer:questions[i].correctAnswer,
+                  };
+                  testQuestions.push(testQuestion);
                 }
+                return TestQuestionController.create(testQuestions)
+                    .then((tqs)=>{
+                      console.log('the tqs....', tqs);
+                      tqs.forEach((tq)=>{
+                        exam.testQuestions.push(tq._id);
+                      });
+                      return exam.update(exam)
+                          .then((res)=>{
+                            console.log('the res.....', res);
+                            return res;
+                          });
+                    });
 
-                //Save the exam with the appended test questions
-                return exam.save()
-                    .then((res)=>{
-                      return res;
-                    })
-              })
+              });
 
         }).catch(handleError)
   },
