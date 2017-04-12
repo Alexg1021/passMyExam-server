@@ -9,6 +9,7 @@ var QuestionGroupSchema = new mongoose.Schema({
   subText: [{type:String, default:null}],
   answers: [{type: mongoose.Schema.Types.ObjectId, ref: 'Answer'}],
   examDescription:{type: mongoose.Schema.Types.ObjectId, ref: 'ExamDescription'},
+  examType: {type: mongoose.Schema.Types.ObjectId, ref: 'ExamType'},
   active: {type: Boolean, default: true},
   image: {data: Buffer, contentType: String},
   correctAnswer: {type: mongoose.Schema.Types.ObjectId, ref: 'Answer'},

@@ -74,4 +74,29 @@ router.route('/generate-new-exam/:id')
     });
 
 
+//route for saving, submitting and generating exam results
+router.route('/save-and-submit/:id')
+    .put((req, res)=> {
+      ExamController.saveAndSubmit(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+            res.status(400);
+          })
+    });
+
+//route for saving, submitting and generating exam results
+router.route('/get-exam-results/:id')
+    .get((req, res)=> {
+      ExamController.getExamResults(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+            res.status(400);
+          })
+    });
+
+
 export default router;
