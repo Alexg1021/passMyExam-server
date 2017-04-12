@@ -6,7 +6,9 @@ import mongoose from 'mongoose';
 
 var TestQuestionSchema = new mongoose.Schema({
   questionGroup: {type: mongoose.Schema.Types.ObjectId, ref: 'QuestionGroup'},
+  exam: {type:mongoose.Schema.Types.ObjectId, ref: 'Exam'},
   startTime: {type: Date, default: null},
+  questionNumber:{type: Number, default:null},
   pauseTime: [{type: Date, default: null}],
   restartTime: [{type: Date, default: null}],
   endTime: [{type: Date, default: null}],

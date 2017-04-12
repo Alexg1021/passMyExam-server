@@ -49,4 +49,38 @@ router.route('/:id')
             res.json(err);
           });
     });
+
+
+router.route('/get-exam-question/:questionId')
+    .put((req, res) => {
+      TestQuestionController.getTestQuestion(req)
+          .then((data)=>{
+        res.json(data);
+      }, (err) => {
+        res.json(err);
+      })
+    });
+
+router.route('/save-test-answer/:questionId')
+    .put((req, res) => {
+      TestQuestionController.saveTestAnswer(req)
+          .then((data)=>{
+            res.json(data);
+          }, (err) => {
+            res.json(err);
+          })
+    });
+
+router.route('/flag-question/:questionId')
+    .put((req, res) => {
+      TestQuestionController.flagQuestion(req)
+          .then((data)=>{
+            res.json(data);
+          }, (err) => {
+            res.json(err);
+          })
+    });
+
+
+
 export default router;

@@ -50,6 +50,18 @@ router.route('/:id')
     });
 
 //route for populating an exam with test questions
+router.route('/begin-exam/:id')
+    .put((req, res)=> {
+      ExamController.beginExam(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+            res.status(400);
+          })
+    });
+
+//route for populating an exam with test questions
 router.route('/generate-new-exam/:id')
     .put((req, res)=> {
       ExamController.generateNewExam(req)

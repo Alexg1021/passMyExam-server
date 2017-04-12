@@ -82,6 +82,38 @@ const ExamController = {
         }).catch(handleError)
   },
 
+  beginExam: function beginExam(req) {
+    let exam = req.body;
+    exam.active = true;
+    exam.startTime = new Date();
+    return Exam.findOne({_id: req.params.id})
+        .exec()
+        .then((ex) => {
+          return ex.update(exam)
+              .then((res) => {
+                return Exam.findOne({_id:exam._id})
+                    .populate({
+                      path: 'examDescription',
+                      populate:{
+                        path:'examType'
+                      }
+                    })
+                    .populate({
+                      path: 'testQuestions',
+                      populate:{
+                        path:'questionGroup',
+                        populate:{
+                          path:'answers'
+                        }
+                      }
+                    })
+                    .then((updatedExam)=>{
+                      return updatedExam;
+                    })
+              })
+        }).catch(handleError);
+  },
+
 
   generateNewExam: function generateNewExam(req) {
     //Load the required Exam with the examDescription
@@ -97,6 +129,8 @@ const ExamController = {
                 let testQuestions = [];
                 for(var i = 0; i < exam.examDescription.totalQuestions; i++){
                   let testQuestion = {
+                    questionNumber:i + 1,
+                    exam:exam._id,
                     questionGroup:questions[i]._id,
                     correctAnswer:questions[i].correctAnswer,
                   };
@@ -104,15 +138,32 @@ const ExamController = {
                 }
                 return TestQuestionController.create(testQuestions)
                     .then((tqs)=>{
-                      console.log('the tqs....', tqs);
                       tqs.forEach((tq)=>{
                         exam.testQuestions.push(tq._id);
                       });
                       return exam.update(exam)
                           .then((res)=>{
-                            console.log('the res.....', res);
-                            return res;
+                            return Exam.findOne({_id:exam._id})
+                                .populate({
+                                  path: 'examDescription',
+                                  populate:{
+                                    path:'examType'
+                                  }
+                                })
+                                .populate({
+                                  path: 'testQuestions',
+                                  populate:{
+                                    path:'questionGroup',
+                                    populate:{
+                                      path:'answers'
+                                    }
+                                  }
+                                })
+                                .then((pmeExam)=>{
+                                  return pmeExam;
+                                });
                           });
+
                     });
 
               });

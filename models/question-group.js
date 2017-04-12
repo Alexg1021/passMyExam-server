@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 
 var QuestionGroupSchema = new mongoose.Schema({
   question: {type: String, default: null},
+  subText: [{type:String, default:null}],
   answers: [{type: mongoose.Schema.Types.ObjectId, ref: 'Answer'}],
   examDescription:{type: mongoose.Schema.Types.ObjectId, ref: 'ExamDescription'},
   active: {type: Boolean, default: true},

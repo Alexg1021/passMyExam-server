@@ -5,6 +5,7 @@ import _ from 'lodash';
 import path from 'path';
 import TestQuestion from '../models/test-question';
 import Answer from '../models/answer';
+import Exam from '../models/exam';
 import mongoose from 'mongoose';
 import q from 'q';
 import async from 'async';
@@ -44,6 +45,17 @@ const TestQuestionController = {
     return dfrd.promise;
   },
 
+  destroy:function destroy(req){
+    return TestQuestion.findOne({_id: req.params.id})
+        .exec()
+        .then((testQuestion) => {
+          return testQuestion.update({'deletedAt': new Date()})
+              .then((res)=>{
+                return res;
+              })
+        }).catch(handleError)
+  },
+
   findById: function findById(req) {
     return TestQuestion.findOne({_id: req.params.id})
         .exec()
@@ -63,16 +75,61 @@ const TestQuestionController = {
         }).catch(handleError);
   },
 
-  destroy: function destroy(req) {
-    return TestQuestion.findOne({_id: req.params.id})
+  getTestQuestion: function getTestQuestion(req) {
+    return TestQuestion.findOne({_id: req.params.questionId})
         .exec()
-        .then((TestQuestion) => {
-          return TestQuestion.update({'deletedAt': new Date()})
+        .then((testQuestion) => {
+          if(!testQuestion.active){
+            testQuestion.active=true;
+            testQuestion.startTime = new Date();
+          }
+          return testQuestion.update(testQuestion)
               .then((res)=>{
-                return res;
-              })
+                return  TestQuestion.findOne({_id:testQuestion._id})
+                    .populate({path:'questionGroup',populate:{path: 'answers'}})
+                    .then((tq)=>{
+                      return tq;
+                    });
+              });
+
         }).catch(handleError)
   },
+
+  saveTestAnswer: function saveTestAnswer(req){
+    let tq = req.body;
+      tq.answeredCorrectly =  tq.answerGiven == tq.correctAnswer;
+      tq.endTime = new Date();
+      tq.answered = true;
+    return TestQuestion.findOne({_id:req.params.questionId})
+        .exec()
+        .then((question)=>{
+          return question.update(tq)
+              .then((res)=>{
+
+                return TestQuestion.findOne({_id:tq._id})
+                    .populate({path:'questionGroup',populate:{path: 'answers'}})
+                    .then((testQuestion)=>{
+                      return testQuestion;
+                    });
+              });
+        });
+  },
+
+  flagQuestion: function flagQuestion(req){
+    let tq = req.body;
+    return TestQuestion.findOne({_id:req.params.questionId})
+        .exec()
+        .then((question)=>{
+          return question.update(tq)
+              .then((res)=>{
+                return TestQuestion.findOne({_id:tq._id})
+                    .populate({path:'questionGroup',populate:{path: 'answers'}})
+                    .then((testQuestion)=>{
+                      return testQuestion;
+                    });
+              });
+        });
+  }
 
 };
 
