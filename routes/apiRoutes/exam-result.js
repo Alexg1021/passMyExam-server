@@ -48,4 +48,27 @@ router.route('/:id')
             res.json(err);
           });
     });
+
+//Endpoint to return all exam results
+router.route('/get-exam-results/:userId')
+    .get((req, res) => {
+      ExamResultController.getExamResults(req)
+          .then((data)=>{
+            res.json(data);
+          }, (err) => {
+            res.json(err);
+          })
+    });
+
+//Endpoint to return single exam result
+router.route('/get-exam-result/:examId')
+    .get((req, res) => {
+      ExamResultController.getExamResult(req)
+          .then((data)=>{
+        res.json(data);
+      }, (err) => {
+        res.json(err);
+      })
+    });
+
 export default router;

@@ -4,6 +4,7 @@
 import _ from 'lodash';
 import path from 'path';
 import ExamResult from '../models/exam-result';
+import Exam from "../models/exam";
 import mongoose from 'mongoose';
 import q from 'q';
 
@@ -64,6 +65,82 @@ const ExamResultController = {
               })
         }).catch(handleError)
   },
+
+  //Method to get all exams from user with test results
+  getExamResults: function getExamResults(req) {
+    return Exam.find({user: req.params.userId, completed: true})
+        .populate({
+          path: 'examDescription',
+          populate:{
+            path:'examType'
+          }
+        })
+        .populate({
+          path: 'testQuestions',
+          populate:{
+            path:'questionGroup',
+            populate:{
+              path:'answers'
+            },
+          },
+        })
+        .populate({
+          path: 'testQuestions',
+          populate:{
+            path:'answerGiven'
+          },
+        })
+        .populate({
+          path: 'testQuestions',
+          populate:{
+            path:'correctAnswer'
+          },
+        })
+        .populate('examResults')
+        .exec()
+        .then((res) => {
+          return res;
+        }).catch(handleError);
+  },
+
+  //Method to get single exam result
+  getExamResult: function getExamResult(req) {
+    return Exam.findOne({_id: req.params.examId})
+        .populate({
+          path: 'examDescription',
+          populate:{
+            path:'examType'
+          }
+        })
+        .populate({
+          path: 'testQuestions',
+          populate:{
+            path:'questionGroup',
+            populate:{
+              path:'answers'
+            }
+          }
+        })
+        .populate({
+          path: 'testQuestions',
+          populate:{
+            path:'answerGiven'
+          },
+        })
+        .populate({
+          path: 'testQuestions',
+          populate:{
+            path:'correctAnswer'
+          },
+        })
+        .populate('examResults')
+        .exec()
+        .then((res) => {
+          return res;
+        }).catch(handleError);
+  },
+
+
 
 };
 

@@ -9,6 +9,7 @@ import QuestionGroup from '../models/question-group';
 import TestQuestionController from '../controllers/test-question.controller';
 import mongoose from 'mongoose';
 import q from 'q';
+import moment from 'moment';
 
 mongoose.Promise = Promise;
 
@@ -87,6 +88,9 @@ const ExamController = {
     let exam = req.body;
     exam.active = true;
     exam.startTime = new Date();
+    exam.endTime = moment(exam.startTime).add(exam.examDescription.timeAllowed[0], 'm').add(2,'s');
+
+    // moment(oldDateObj).add(30, 'm');
     return Exam.findOne({_id: req.params.id})
         .exec()
         .then((ex) => {
