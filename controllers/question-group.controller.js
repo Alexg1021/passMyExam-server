@@ -31,7 +31,8 @@ const QuestionGroupController = {
     let answers = req.body.answers;
 
     req.body.answers = [];
-    const questionGroup = new QuestionGroup(req.body);
+
+    let questionGroup = new QuestionGroup(req.body);
 
     return questionGroup.save()
         .then((question)=> {
@@ -41,6 +42,7 @@ const QuestionGroupController = {
           });
 
          // Send Answers array to create in bulk
+         //  console.log('question...', questionGroup);
          return AnswerController.create(answers)
               .then((res)=> {
 
@@ -90,12 +92,22 @@ const QuestionGroupController = {
     return QuestionGroup.findOne({_id: req.params.id})
         .exec()
         .then((QuestionGroup) => {
-          return QuestionGroup.update({'deletedAt': new Date()})
+          return QuestionGroup.remove()
               .then((res)=>{
                 return res;
               })
         }).catch(handleError)
   },
+
+  findExamTypeQuestions:function findExamTypeQuestions(req){
+    return QuestionGroup.find({examType:req.params.examTypeId})
+        .populate('answers')
+        .exec()
+        .then((questions)=>{
+          return questions;
+        })
+        .catch(handleError);
+  }
 
 };
 

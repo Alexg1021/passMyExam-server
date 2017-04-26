@@ -9,6 +9,7 @@ var ExamTypeSchema = new mongoose.Schema({
   description: String,
   shortDescription: String,
   industry: {type: mongoose.Schema.Types.ObjectId, ref: 'Industry'},
+  active: {type: Boolean, default: true},
   createdAt: {type: Date, default: Date.now},
   updatedAt: {type: Date, default: Date.now},
   deletedAt: {type: Date, default: null}
