@@ -26,3 +26,19 @@ passport.use('local', new Strategy({
     }
 ));
 export default passport;
+
+// passport.use(new LocalStrategy({usernameField: 'email'}, function (email, password, next) {
+//
+//   let User = models.User;
+//
+//   User.findOne({email: email, deleted_at: null}, function (err, user) {
+//     if (err) return next(err);
+//     if (!user) return next(null, false, {message: 'Incorrect username.'});
+//
+//     user.validPassword(password, function (err, isMatch) {
+//       if (err) return next(err);
+//       if (!isMatch) return next(null, false);
+//       return next(null, user);
+//     });
+//   });
+// }));

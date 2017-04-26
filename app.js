@@ -6,11 +6,12 @@ var cookieParser = require('cookie-parser');
 import APIRoutes from './routes/api';
 import cors from 'cors';
 import models from './models';
+import passport from './modules/passport';
 var bodyParser = require('body-parser');
 var expressJWT = require('express-jwt');
 var app = express();
 var env = require('dotenv').config();
-var passport =require('passport');
+// var passport =require('passport');
 var LocalStrategy = require('passport-local');
 var mongoose = require('mongoose');
 
@@ -40,33 +41,18 @@ app.use(cors({
   origin: corsHostnameWhitelist
 }));
 
-//
+
 // app.use('/', index);
 // app.use('/users', users);
 
 app.use(passport.initialize());
-passport.use(new LocalStrategy({usernameField: 'email'}, function (email, password, next) {
-
-  let User = models.User;
-
-  User.findOne({email: email, deleted_at: null}, function (err, user) {
-    if (err) return next(err);
-    if (!user) return next(null, false, {message: 'Incorrect username.'});
-
-    user.validPassword(password, function (err, isMatch) {
-      if (err) return next(err);
-      if (!isMatch) return next(null, false);
-      return next(null, user);
-    });
-  });
-}));
 
 app.use('/', expressJWT({
   secret: process.env.JWT_SECRET
 }).unless({
   // Doesn't protect /api/v1/auth (except for /auth/renew) or /api/v1/version
   //path: /\/api\/login(?!\/renew)/
-  path: [/\/api\/login(?!\/renew)/, /\/api\/user\/reset-password/, /\/api\/user\/forgot-password/]
+  path: [/\/api\/login(?!\/renew)/,/\/api\/authenticate\/login(?!\/renew)/, /\/api\/user\/reset-password/, /\/api\/user\/forgot-password/]
 }));
 
 APIRoutes(app);

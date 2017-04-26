@@ -6,6 +6,7 @@ import path from 'path';
 import Answer from '../models/answer';
 import mongoose from 'mongoose';
 import q from 'q';
+import async from 'async';
 
 mongoose.Promise = Promise;
 
@@ -24,13 +25,19 @@ const AnswerController = {
         .catch(handleError);
   },
 
-  create: function create(req) {
+  create: function create(answers) {
     const dfrd = q.defer();
-    const answer = new Answer(req.body);
 
-    answer.save(function (err){
-      if (err) return dfrd.reject(err);
-      dfrd.resolve(answer);
+    async.map(answers, function (answer, callback){
+      var ans = new Answer(answer);
+
+      ans.save(function(err){
+        if(err) return dfrd.reject(err);
+        callback(null, ans);
+      });
+    }, function (err, result){
+      if(err) return dfrd.reject(err);
+      dfrd.resolve(result);
     });
     return dfrd.promise;
   },

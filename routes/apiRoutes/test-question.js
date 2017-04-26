@@ -1,14 +1,14 @@
 "use strict";
 
 import express from 'express';
-import ExamResultController from '../../controllers/exam-result.controller';
+import TestQuestionController from '../../controllers/test-question.controller';
 import fs from 'fs';
 
 const router = express.Router();
 
 router.route('/')
     .get((req, res)=>{
-      ExamResultController.getAll()
+      TestQuestionController.getAll()
           .then((data)=>{
             res.json(data);
           }, (err) => {
@@ -16,24 +16,25 @@ router.route('/')
           });
     })
     .post((req, res) => {
-      ExamResultController.create(req)
+      TestQuestionController.create(req)
           .then((data) => {
             res.json(data);
           },(err) =>{
             res.json(err);
+            res.status(400);
           });
     });
 
 router.route('/:id')
     .get((req, res) => {
-      ExamResultController.findById(req).then((data)=>{
+      TestQuestionController.findById(req).then((data)=>{
         res.json(data);
       }, (err) => {
         res.json(err);
       })
     })
     .put((req, res) => {
-      ExamResultController.update(req)
+      TestQuestionController.update(req)
           .then((data) => {
             res.json(data);
           }, (err) => {
@@ -41,7 +42,7 @@ router.route('/:id')
           })
     })
     .delete((req, res) => {
-      ExamResultController.destroy(req)
+      TestQuestionController.destroy(req)
           .then((data) => {
             res.json(data);
           }, (err) => {
@@ -49,10 +50,20 @@ router.route('/:id')
           });
     });
 
-//Endpoint to return all exam results
-router.route('/get-exam-results/:userId')
-    .get((req, res) => {
-      ExamResultController.getExamResults(req)
+
+router.route('/get-exam-question/:questionId')
+    .put((req, res) => {
+      TestQuestionController.getTestQuestion(req)
+          .then((data)=>{
+        res.json(data);
+      }, (err) => {
+        res.json(err);
+      })
+    });
+
+router.route('/save-test-answer/:questionId')
+    .put((req, res) => {
+      TestQuestionController.saveTestAnswer(req)
           .then((data)=>{
             res.json(data);
           }, (err) => {
@@ -60,15 +71,16 @@ router.route('/get-exam-results/:userId')
           })
     });
 
-//Endpoint to return single exam result
-router.route('/get-exam-result/:examId')
-    .get((req, res) => {
-      ExamResultController.getExamResult(req)
+router.route('/flag-question/:questionId')
+    .put((req, res) => {
+      TestQuestionController.flagQuestion(req)
           .then((data)=>{
-        res.json(data);
-      }, (err) => {
-        res.json(err);
-      })
+            res.json(data);
+          }, (err) => {
+            res.json(err);
+          })
     });
+
+
 
 export default router;

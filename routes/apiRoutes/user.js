@@ -2,6 +2,8 @@
 
 import express from 'express';
 import UserController from '../../controllers/user.controller';
+import jwt from 'jsonwebtoken';
+
 import fs from 'fs';
 
 const router = express.Router();
@@ -54,6 +56,43 @@ router.route('/reset-password')
       UserController.resetPassword(req)
           .then((data)=> {
             res.json(data)
+          }, (err)=> {
+            res.json(err);
+          })
+    });
+
+
+router.route('/confirm-email/:id')
+    .put((req, res)=> {
+      UserController.confirmEmail(req)
+          .then((data)=> {
+            res.json({
+              token: jwt.sign(req.body, process.env.JWT_SECRET)
+            });
+            res.sendStatus(200);
+          }, (err)=> {
+            res.json(err);
+          })
+    });
+
+
+//route for saving purchased exams
+router.route('/purchase-exam/:id')
+    .post((req, res)=> {
+      UserController.purchaseExam(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+          })
+    });
+
+//route for saving purchased exams
+router.route('/get-my-exams/:id')
+    .get((req, res)=> {
+      UserController.getMyExams(req)
+          .then((data)=> {
+            res.json(data);
           }, (err)=> {
             res.json(err);
           })

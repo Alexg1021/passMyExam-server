@@ -48,4 +48,55 @@ router.route('/:id')
             res.json(err);
           });
     });
+
+//route for populating an exam with test questions
+router.route('/begin-exam/:id')
+    .put((req, res)=> {
+      ExamController.beginExam(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+            res.status(400);
+          })
+    });
+
+//route for populating an exam with test questions
+router.route('/generate-new-exam/:id')
+    .put((req, res)=> {
+      ExamController.generateNewExam(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+            res.status(400);
+          })
+    });
+
+
+//route for saving, submitting and generating exam results
+router.route('/save-and-submit/:id')
+    .put((req, res)=> {
+      ExamController.saveAndSubmit(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+            res.status(400);
+          })
+    });
+
+//route for saving, submitting and generating exam results
+router.route('/get-exam-results/:id')
+    .get((req, res)=> {
+      ExamController.getExamResults(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+            res.status(400);
+          })
+    });
+
+
 export default router;

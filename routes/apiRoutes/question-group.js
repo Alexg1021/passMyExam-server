@@ -21,6 +21,7 @@ router.route('/')
             res.json(data);
           },(err) =>{
             res.json(err);
+            res.status(400);
           });
     });
 
@@ -48,4 +49,14 @@ router.route('/:id')
             res.json(err);
           });
     });
+
+router.route('/exam-type-questions/:examTypeId')
+    .get((req, res) => {
+      QuestionGroupController.findExamTypeQuestions(req).then((data)=>{
+        res.json(data);
+      }, (err) => {
+        res.json(err);
+      })
+    });
+
 export default router;
