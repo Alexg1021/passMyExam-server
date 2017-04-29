@@ -76,10 +76,11 @@ router.post('/new-user', (req, res) =>{
         if(isUser){
           res.json({status: 400, error:'A user by this email already exists!'});
           res.sendStatus(400);
-        }else if(!validPassword(password)){
-          res.json({status: 400, error:'We\'re Sorry but this password will not work. Please try a different password.'});
-          res.sendStatus(400);
         }
+        // else if(!validPassword(password)){
+        //   res.json({status: 400, error:'We\'re Sorry but this password will not work. Please try a different password.'});
+        //   res.sendStatus(400);
+        // }
         Encryption.encrypt(password)
             .then((hash)=>{
 
