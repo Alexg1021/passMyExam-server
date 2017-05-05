@@ -59,4 +59,13 @@ router.route('/exam-type-questions/:examTypeId')
       })
     });
 
+router.route('/upload-image')
+    .post((req, res) => {
+      QuestionGroupController.uploadImage(req).then((data)=>{
+        res.json(data);
+      }, (err) => {
+        res.json(err);
+      })
+    });
+
 export default router;
