@@ -53,7 +53,7 @@ var s3 = new AWS.S3({
   secretAccessKey:awsSecret,
   region: region
 });
-
+console.log('the s3', s3);
 function getName() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -94,6 +94,7 @@ export default function photoUploader(payload, cb) {
   }
   const image = payload.data;
   let file = tmp.tmpNameSync({ postfix: `.${type}` });
+  console.log('payload', image);
 
   if (['data:image/png;base64','data:image/jpeg;base64','data:image/jpg;base64'].indexOf(payload.type) == -1) {
     const fileName = getName() + '.' + type;
