@@ -11,7 +11,7 @@ var QuestionGroupSchema = new mongoose.Schema({
   examDescription:{type: mongoose.Schema.Types.ObjectId, ref: 'ExamDescription'},
   examType: {type: mongoose.Schema.Types.ObjectId, ref: 'ExamType'},
   active: {type: Boolean, default: true},
-  image: {data: Buffer, contentType: String},
+  image: {thumb: String, medium: String, fileType:String, original:String},
   correctAnswer: {type: mongoose.Schema.Types.ObjectId, ref: 'Answer'},
   createdAt: {type: Date, default: Date.now},
   updatedAt: {type: Date, default: Date.now},
