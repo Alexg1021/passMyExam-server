@@ -61,6 +61,22 @@ const AnswerController = {
         }).catch(handleError);
   },
 
+  updateAnswers:function updateAnswers(answers){
+    const dfrd = q.defer();
+    return new Promise((resolve)=>{
+     answers.map((answer)=>{
+      return Answer.findOne({_id:answer._id})
+          .then((ans)=>{
+            return ans.update(answer)
+                .then((res)=>{
+                  return res;
+                })
+          })
+      });
+      resolve(answers);
+    });
+  },
+
   destroy: function destroy(req) {
     return Answer.findOne({_id: req.params.id})
         .exec()

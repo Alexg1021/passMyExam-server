@@ -59,6 +59,16 @@ router.route('/exam-type-questions/:examTypeId')
       })
     });
 
+router.route('/update-question/:questionId')
+    .put((req, res) => {
+      QuestionGroupController.updateQuestion(req).then((data)=>{
+        res.json(data);
+      }, (err) => {
+        res.json(err);
+      })
+    });
+
+
 router.route('/upload-image')
     .post((req, res) => {
       QuestionGroupController.uploadImage(req).then((data)=>{
