@@ -45,7 +45,6 @@ const QuestionGroupController = {
              });
 
              // Send Answers array to create in bulk
-             //  console.log('question...', questionGroup);
              return AnswerController.create(answers)
                  .then((res)=> {
 
@@ -58,13 +57,11 @@ const QuestionGroupController = {
                    });
                    //Set correct answer on questionGroup
                    question.correctAnswer = correctAnswer._id;
-                   console.log('finna check it', bundle);
                    if(bundle){
                     return photoUploader(bundle, ({err, versions})=>{
                       if(err){
                         return err;
                       }else{
-                        console.log('got there', versions);
                         let thumb = _.find(versions, {"suffix": '-thumb'});
                         let original = _.find(versions, {"original": true});
                         let medium = _.find(versions, {"suffix": "-medium"});
@@ -207,7 +204,6 @@ const QuestionGroupController = {
             medium:medium.url,
             original:original.url
           };
-          console.log('the image', image);
 
           resolve(versions);
         }
