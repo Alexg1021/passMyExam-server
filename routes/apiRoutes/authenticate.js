@@ -10,7 +10,7 @@ import Mailgun from 'mailgun-js';
 const router = express.Router();
 
 function validPassword(pass){
-  let re = new RegExp("^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{8,15}$");
+  let re = new RegExp("^(?=.*[0-9])(?=.*[A-Za-z])[a-zA-Z0-9!@#$%^&*]{8,15}");
   return !!re.test(pass);
 }
 

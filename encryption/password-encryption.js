@@ -10,6 +10,7 @@ let Encryption = {
   },
   check: function (secretText, hash) {
     // Load hash from your password DB.
+
     return bcrypt.compare(secretText, hash).then(function(res) {
       return res;
     });

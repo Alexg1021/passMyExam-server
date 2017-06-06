@@ -51,6 +51,7 @@ router.route('/:id')
           });
     });
 
+
 router.route('/reset-password')
     .post((req, res)=> {
       UserController.resetPassword(req)
@@ -97,5 +98,23 @@ router.route('/get-my-exams/:id')
             res.json(err);
           })
     });
+
+
+//route for saving purchased exams
+router.route('/update-password/:id')
+    .put((req, res)=> {
+      UserController.updatePassword(req)
+          .then((data)=> {
+            if(data.error){
+              res.json({status: 400, error:'The old password does not match our records'});
+              res.sendStatus(400);
+            }
+            res.json(data);
+
+          }, (err)=> {
+            res.json(err);
+          })
+    });
+
 
 export default router;

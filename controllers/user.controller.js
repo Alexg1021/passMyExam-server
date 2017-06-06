@@ -19,7 +19,7 @@ function handleError(err) {
 }
 
 function validPassword(pass){
-  let re = new RegExp("^(?=.*[A-Za-z])(?=.*\d)([a-zA-Z0-9]){8,15}$");
+  let re = new RegExp("^(?=.*[0-9])(?=.*[A-Za-z])[a-zA-Z0-9!@#$%^&*]{8,15}$");
   return !!re.test(pass);
 }
 
@@ -55,13 +55,10 @@ const UserController = {
             //if it passes then encrypt the password
             Encryption.encrypt(password)
                 .then((hash)=>{
-                  console.log('hashed pass: ', hash);
                   let newUser = {email: email, password: hash};
                   let user = new User(newUser);
 
                   user.save(function(err){
-                    console.log(err);
-                    console.log('saved user');
                     return errObject;
                   })
                 });
@@ -191,6 +188,31 @@ const UserController = {
           return res.examsPurchased;
         })
         .catch(handleError);
+  },
+
+  updatePassword:function updatePassword(req){
+    return User.findOne({_id:req.params.id})
+        .select('+password')
+        .exec()
+        .then((user)=>{
+          let creds = req.body;
+
+          return Encryption.check(creds.password, user.password).then((resp) => {
+            if(resp){
+              return Encryption.encrypt(creds.newPassword)
+                  .then((hash)=>{
+                    user.password = hash;
+                    return user.update(user)
+                        .then((res) => {
+                          return res;
+                        });
+                  });
+            }else{
+              return {error:'Error!'};
+            }
+          });
+
+        });
   }
 
 };
