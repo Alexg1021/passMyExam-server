@@ -16,6 +16,7 @@ var ExamSchema = new mongoose.Schema({
   completed: {type: Boolean, default: false},
   active: {type: Boolean, default: false},
   user:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  order:{type: mongoose.Schema.Types.ObjectId, ref: 'Order'},
   createdAt: {type: Date, default: Date.now},
   updatedAt: {type: Date, default: Date.now},
   deletedAt: {type: Date, default: null}

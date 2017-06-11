@@ -5,6 +5,8 @@ import _ from 'lodash';
 import path from 'path';
 // const User = models.default.User;
 import User from '../models/user';
+import Order from '../models/order';
+
 import mongoose from 'mongoose';
 import q from 'q';
 import Encryption from '../encryption/password-encryption';
@@ -152,10 +154,12 @@ const UserController = {
     //Create the new exam with examdescriptionId and userId
     //Return the created exam and push the id into the user purchased exams array
     //return the data
+    let order = req.body;
 
     let data = {
-      examDescription:req.body.examDescriptionId,
-      userId:req.params.id
+      examDescription:order.examDescription,
+      userId:req.params.id,
+      order:order._id
     };
     return ExamController.create(data)
         .then((exam)=>{
@@ -164,7 +168,14 @@ const UserController = {
                 user.examsPurchased.push(exam._id);
                 return user.save()
                     .then((res)=>{
-                      return res;
+
+                      return Order.findById({_id: order._id})
+                          .then((ord)=>{
+                            return ord.update({exam:exam._id})
+                                .then((data)=>{
+                                  return data;
+                                })
+                          });
                     })
                     .catch(handleError);
               });

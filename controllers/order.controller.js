@@ -3,10 +3,12 @@
 // const models = require('../models');
 import _ from 'lodash';
 import path from 'path';
-import Answer from '../models/answer';
+import Order from '../models/order';
 import mongoose from 'mongoose';
 import q from 'q';
 import async from 'async';
+import uuid from 'uuid';
+var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 mongoose.Promise = Promise;
 
@@ -44,6 +46,8 @@ const OrderController = {
 
   findById: function findById(req) {
     return Order.findOne({_id: req.params.id})
+        .populate('user')
+        .populate('examDescription')
         .exec()
         .then((res) => {
           return res;
@@ -88,7 +92,36 @@ const OrderController = {
         }).catch(handleError)
   },
 
-  sendPayment: function sendPayment(){
+  sendPayment: function sendPayment(req){
+    let stripeToken = req.body.token.id;
+    let orderId = uuid.v4().split('-').pop();
+    let bundle = req.body;
+
+    let order = {
+      amount: bundle.price, // amount in cents, again
+      currency: "usd",
+      card: stripeToken,
+      metadata: {'orderId': orderId},
+      description: `Charge for ${bundle.user.email}`
+    };
+    return stripe.charges.create(order)
+        .then((data)=>{
+            //If successful then should save this as a new order in db and return the orderId
+          let newOrder = new Order({
+            user:bundle.user._id,
+            orderId:orderId,
+            totalAmount:bundle.price,
+            examDescription: bundle.examDescriptionId
+          });
+
+          return newOrder.save()
+              .then((ord)=>{
+                return ord;
+              });
+        }, (err)=>{
+          let newErr = {status: err.statusCode, type: err.type, message: err.message, error:true};
+          return newErr;
+        });
 
   }
 
