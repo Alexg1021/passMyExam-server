@@ -10,6 +10,7 @@ var OrderSchema = new mongoose.Schema({
   totalAmount: {type: String, default: null},
   examDescription: {type: mongoose.Schema.Types.ObjectId, ref: 'ExamDescription'},
   exam: {type: mongoose.Schema.Types.ObjectId, ref: 'Exam'},
+  source: {type: Object},
   createdAt: {type: Date, default: Date.now},
   updatedAt: {type: Date, default: Date.now},
   deletedAt: {type: Date, default: null}

@@ -168,7 +168,6 @@ const UserController = {
                 user.examsPurchased.push(exam._id);
                 return user.save()
                     .then((res)=>{
-
                       return Order.findById({_id: order._id})
                           .then((ord)=>{
                             return ord.update({exam:exam._id})

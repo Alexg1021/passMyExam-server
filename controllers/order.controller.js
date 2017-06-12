@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import q from 'q';
 import async from 'async';
 import uuid from 'uuid';
+import Emailer from '../mailer/mailer';
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 mongoose.Promise = Promise;
@@ -110,13 +111,25 @@ const OrderController = {
           let newOrder = new Order({
             user:bundle.user._id,
             orderId:orderId,
+            source:data.source,
             totalAmount:bundle.price,
-            examDescription: bundle.examDescriptionId
+            examDescription: bundle.examDescription._id
           });
-
           return newOrder.save()
               .then((ord)=>{
-                return ord;
+
+                let orderOptions = {
+                  order:ord,
+                  examDescription:bundle.examDescription,
+                  user:bundle.user,
+                  paymentOptions:data.source
+                };
+                // console.log('the order options', orderOptions);
+                return Emailer.purchaseConfirmation(orderOptions)
+                    .then((res)=>{
+
+                      return ord;
+                    });
               });
         }, (err)=>{
           let newErr = {status: err.statusCode, type: err.type, message: err.message, error:true};
