@@ -12,8 +12,10 @@ var ExamDescriptionSchema = new mongoose.Schema({
   longDescription: String,
   totalQuestions: {type: Number, default: null},
   price: {type: Number, default: null},
+  isActive: {type: Boolean, default:true},
   timeAllowed: [{type: Number, default: null}],
-  image: {data: Buffer, contentType: String},
+  primaryImage: {thumb: String, medium: String, fileType:String, original:String},
+  secondaryImage:{thumb: String, medium: String, fileType:String, original:String},
   createdAt: {type: Date, default: Date.now},
   updatedAt: {type: Date, default: Date.now},
   deletedAt: {type: Date, default: null}

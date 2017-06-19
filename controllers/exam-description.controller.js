@@ -36,6 +36,7 @@ const ExamDescriptionController = {
     return dfrd.promise;
   },
 
+
   findById: function findById(req) {
     return ExamDescription.findOne({_id: req.params.id})
         .populate({path: 'examType', populate:{path: 'industry'}})
@@ -55,6 +56,44 @@ const ExamDescriptionController = {
               })
         }).catch(handleError);
   },
+
+  // updateExamDescription:function updateExamDescription(req){
+  //   let newPrimaryImage = req.body.newImage;
+  //   console.log(newPrimaryImage);
+  //   return new Promise((resolve)=> {
+  //     return ExamDescription.findOne({_id:req.params.id})
+  //         .exec()
+  //         .then((description)=>{
+  //           if (newPrimaryImage) {
+  //             return photoUploader(newPrimaryImage, ({err, versions})=> {
+  //               if (err) {
+  //                 return err;
+  //               } else {
+  //                 let thumb = _.find(versions, {"suffix": '-thumb'});
+  //                 let original = _.find(versions, {"original": true});
+  //                 let medium = _.find(versions, {"suffix": "-medium"});
+  //
+  //                 description.image = {
+  //                   thumb: thumb.url,
+  //                   medium: medium.url,
+  //                   original: original.url
+  //                 };
+  //                 return description.update(description)
+  //                     .then((res)=>{
+  //                       resolve(res);
+  //                     });
+  //               }
+  //             })
+  //           }else{
+  //             return description.update(description)
+  //                 .then((res)=>{
+  //                   resolve(res);
+  //                 })
+  //           }
+  //         });
+  //   });
+  // },
+  //
 
   destroy: function destroy(req) {
     return ExamDescription.findOne({_id: req.params.id})
