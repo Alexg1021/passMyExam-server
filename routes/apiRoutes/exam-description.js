@@ -34,6 +34,7 @@ router.route('/:id')
       })
     })
     .put((req, res) => {
+      console.log(req);
       ExamDescriptionController.update(req)
           .then((data) => {
             res.json(data);
