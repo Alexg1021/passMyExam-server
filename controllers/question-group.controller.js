@@ -179,7 +179,7 @@ const QuestionGroupController = {
   findExamTypeQuestions:function findExamTypeQuestions(req){
     return QuestionGroup.find({examType:req.params.examTypeId})
         .populate('answers')
-        .sort({createdAt:-1})
+        .sort({createdAt:1})
         .exec()
         .then((questions)=>{
           return questions;
