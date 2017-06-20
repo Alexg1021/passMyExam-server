@@ -131,6 +131,9 @@ const ExamController = {
               .then((questions)=>{
               //  Array of questions returned
               //  loop through questions and push each one into exam.questionGroup array until counter stops
+                //randomize the questions array with lodash shuffle function
+                questions = _.shuffle(questions);
+
                 let testQuestions = [];
                 for(var i = 0; i < exam.examDescription.totalQuestions; i++){
                   let testQuestion = {
