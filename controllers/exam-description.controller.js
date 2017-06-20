@@ -18,6 +18,7 @@ const ExamDescriptionController = {
   getAll: function getAll() {
     return ExamDescription.find({deletedAt:null})
         .populate({path: 'examType', populate:{path: 'industry'}})
+        .sort({isActive:-1})
         .exec()
         .then((res) => {
           return res;
