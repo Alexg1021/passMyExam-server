@@ -158,7 +158,7 @@ const UserController = {
 
     let data = {
       examDescription:order.examDescription,
-      userId:req.params.id,
+      user:req.params.id,
       order:order._id
     };
     return ExamController.create(data)
