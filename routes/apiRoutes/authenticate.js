@@ -181,6 +181,18 @@ router.route('/forgot-password')
           })
     });
 
+router.route('/reset-password')
+    .post((req, res)=> {
+      UserController.resetPassword(req)
+          .then((data)=> {
+            if(data.status != 200){
+              res.json(data);
+              res.sendStatus(400);
+            }else{
+              res.json(data);
+            }
+          })
+    });
 
 //router.get('/refresh', jwt.protect, function (req, res) {
 //  UserController.refreshToken(req.current_user.dataValues).then(function (user) {
