@@ -71,33 +71,6 @@ const UserController = {
         });
   },
 
-  /**
-  create: function create(req) {
-    let bundle = req.body;
-    const email = bundle.email;
-    const password = bundle.password;
-    const employeeId = bundle.employeeId;
-    return Encryption.encrypt(password).then((hash) => {
-      let user = {
-        email: email,
-        password: hash,
-        employeeId: employeeId,
-        isActivated: false // initially set to false
-      };
-      // create a user with the encrypted hash as password
-      return User.create(user)
-          .then((res) => {
-            // send email to user specifying they should reset password.
-            let text = `Password reset.`,
-                html = `Password reset. Go to ${clientURL}/#/password-reset?hash=${hash} to reset password.`; //auth == hash
-            Emailer.send(`${testEmail}`, 'Password Reset', text, html); // replace testEmail with email
-            // also include the hash as verification
-            return res;
-          }).catch(handleError);
-    });
-  },
-   **/
-
   findById: function findById(req) {
     return User.findOne({_id: req.params.id})
         .exec()
@@ -213,7 +186,7 @@ const UserController = {
             // send email to user specifying they should reset password.
             let mailOptions = {
               to: user.email,
-              resetUrl:`${clientURL}password-reset?hash=${hash}`
+              resetUrl:`${clientURL}authentication/reset-password?hash=${hash}`
             };
             return Emailer.sendPasswordResetToken(mailOptions)
                 .then((sent)=>{
@@ -240,7 +213,65 @@ const UserController = {
             };
           }
         })
+  },
 
+  resetPassword:function resetPassword(req){
+    let bundle = req.body;
+    return User.findOne({email: req.body.email})
+        .select('+password')
+        .exec()
+        .then((user)=>{
+          //Check if user is returned
+          if(user){
+            //Check if password matches hash
+            if(bundle.oldPassHash == user.password){
+              //check if the new password is valid
+              if(validPassword(bundle.newPassword)){
+                //Encrypt the new password
+                return Encryption.encrypt(bundle.newPassword)
+                    .then((hash)=>{
+                      //Update the user with the new hashed password
+                      user.password = hash;
+                      return user.update(user)
+                          .then((res)=>{
+                            if(res.error){
+                              return {
+                                data: 'Reset password error!',
+                                status: 400,
+                                error:'error'
+                              };
+                            }else{
+                              return {
+                                status: 200,
+                                message: "success",
+                                data: "An email has been sent to you to reset your password."
+                              };
+                            }
+                          });
+                    });
+              }else{
+                return {
+                  data: 'Reset password error!',
+                  status: 400,
+                  error:'error'
+                };
+              }
+            }else{
+              return {
+                data: 'Reset password error!',
+                status: 400,
+                error:'error'
+              };
+            }
+
+          }else{
+            return {
+              data: 'Reset password error! User not found!',
+              status: 400,
+              error:'error'
+            };
+          }
+        })
   },
 
   updatePassword:function updatePassword(req){
