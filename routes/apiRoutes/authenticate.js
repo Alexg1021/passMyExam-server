@@ -70,6 +70,7 @@ router.post('/new-user', (req, res) =>{
   const email = req.body.email;
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
+  const userName = req.body.userName;
 
   return User.findOne({email: email})
       .then((isUser)=>{
@@ -84,15 +85,16 @@ router.post('/new-user', (req, res) =>{
         Encryption.encrypt(password)
             .then((hash)=>{
 
-              let user = new User({email: email, password:hash, firstName: firstName, lastName: lastName});
+              let user = new User({email: email, password:hash, firstName: firstName, lastName: lastName, userName:userName});
               return user.save(function(data){
 
                 /* User Setup for Token Response */
 
-                 let userName = user.firstName + ' ' + user.lastName;
+                 // let userName = user.firstName + ' ' + user.lastName;
                  let newUser= {
                  firstName: user.firstName,
                  lastName: user.lastName,
+                 userName:userName,
                  _id: user._id,
                  isAdmin: user.isAdmin,
                  emailConfirmed:user.emailConfirmed,
@@ -165,6 +167,20 @@ router.get('/logout', (req, res) => {
   req.logout();
   res.sendStatus(200);
 });
+
+router.route('/forgot-password')
+    .post((req, res)=> {
+      UserController.sendPasswordResetEmail(req)
+          .then((data)=> {
+            if(data.status != 200){
+              res.json(data);
+              res.sendStatus(400);
+            }else{
+              res.json(data);
+            }
+          })
+    });
+
 
 //router.get('/refresh', jwt.protect, function (req, res) {
 //  UserController.refreshToken(req.current_user.dataValues).then(function (user) {

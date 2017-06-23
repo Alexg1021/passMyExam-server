@@ -53,7 +53,12 @@ app.use('/', expressJWT({
 }).unless({
   // Doesn't protect /api/v1/auth (except for /auth/renew) or /api/v1/version
   //path: /\/api\/login(?!\/renew)/
-  path: [/\/api\/login(?!\/renew)/,/\/api\/authenticate\/login(?!\/renew)/,/\/api\/authenticate\/new-user(?!\/renew)/, /\/api\/user\/reset-password/, /\/api\/user\/forgot-password/]
+  path: [/\/api\/login(?!\/renew)/,
+    /\/api\/authenticate\/login(?!\/renew)/,
+    /\/api\/authenticate\/new-user(?!\/renew)/,
+    /\/api\/authenticate\/reset-password(?!\/renew)/,
+    /\/api\/authenticate\/forgot-password(?!\/renew)/
+  ]
 }));
 
 APIRoutes(app);

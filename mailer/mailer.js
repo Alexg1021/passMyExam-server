@@ -71,47 +71,32 @@ let Emailer ={
         });
   },
 
-  // send: function(mailReq){
-  //
-  //   var mailOptions = {
-  //     from: mailReq.from, // sender address
-  //     to: mailReq.to, // list of receivers
-  //     subject: mailReq.subject, // Subject line
-  //     html: mailReq.html // email body
-  //   };
-  //
-  //   // send mail with defined transport object
-  //   return transporter.sendMail(mailOptions)
-  //       .then((data)=>{
-  //         return data;
-  //       }).catch(handleError);
-  // },
-  //
-  // sendWorkOrderEmail: function(mailReq){
-  //
-  //   var mailOptions = {
-  //     from: 'bis@specialtysalesllc.com', // sender address
-  //     to: mailReq.to, // list of receivers
-  //     cc:mailReq.cc,
-  //     subject: `Specialty Sales: Work Order:${mailReq.workOrderId} Has Been Created`, // Subject line
-  //     html: `<div style="margin: 10px 0;">Hello, ${mailReq.toEmployee}</div>
-  //               <div style="margin: 10px 0;">A new work order #${mailReq.workOrderId} was assigned to you. Click the link below to view the work order.</div>
-  //               <div style="margin: 10px 0;"></div>
-  //               <div style="margin: 10px 0;">Dairy: ${mailReq.dairyAlias}, <a href="http://maps.google.com/?q=${mailReq.dairyAddress}">${mailReq.dairyAddress}</a> </div>
-  //               <div style="margin: 10px 0;"></div>
-  //               <div style="margin: 10px 0;">Work Order: ${mailReq.text}</div>
-  //               <div style="margin: 10px 0;"></div>
-  //               <div style="margin: 10px 0;"><a href="${mailReq.orderUrl}">Click Here To View Work Order</a></div>
-  //               <div style="margin: 10px 0;"></div>
-  //               <div style="margin: 10px 0;">Regards,<br/> Specialty Sales</div>` // email body
-  //   };
-  //
-  //   // send mail with defined transport object
-  //   return transporter.sendMail(mailOptions)
-  //       .then((data)=>{
-  //         return data;
-  //       }).catch(handleError);
-  // },
+  sendPasswordResetToken: function (options){
+
+    let sendData = {
+      //Specify email data
+      from: 'myexam.pe@gmail.com',
+      //The email to contact
+      to: options.to,
+      //Subject and text data
+      subject: `Pass-MyExam: Your Password Reset Link`,
+      html: `<div style="margin: 10px 0;">Hello,</div>
+                <div style="margin: 10px 0;">You recently requested a new password. Follow the link below to reset your password</div>
+                <div style="margin: 10px 0;"></div>
+                <div style="margin: 10px 0;"><a href="${options.resetUrl}">Click Here To Set Your New Password!</a></div>
+                <div style="margin: 10px 0;"></div>
+                 <div style="margin: 10px 0;">If you did not request a new password please contact us immediately.</div>
+                <div style="margin: 10px 0;"></div>
+                <div style="margin: 10px 0;">Best Regards,<br/> The Pass-MyExam Team</div>`
+    };
+
+    return mailgun.messages().send(sendData)
+        .then((res)=>{
+          return {data:'success'};
+        }, (err)=>{
+          return {error: 'Error'};
+        });
+  },
 
 };
 
