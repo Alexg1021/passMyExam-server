@@ -12,6 +12,9 @@ import q from 'q';
 import Encryption from '../encryption/password-encryption';
 
 import ExamController from './exam.controller';
+import Emailer from '../mailer/mailer';
+
+const clientURL = process.env.CLIENT_URL;
 
 mongoose.Promise = Promise;
 
@@ -198,6 +201,46 @@ const UserController = {
           return res.examsPurchased;
         })
         .catch(handleError);
+  },
+
+  sendPasswordResetEmail:function sendPasswordResetEmail(req){
+    return User.findOne({email: req.body.email})
+        .select('+password')
+        .exec()
+        .then((user)=>{
+          if (user){
+            let hash = user.password;
+            // send email to user specifying they should reset password.
+            let mailOptions = {
+              to: user.email,
+              resetUrl:`${clientURL}password-reset?hash=${hash}`
+            };
+            return Emailer.sendPasswordResetToken(mailOptions)
+                .then((sent)=>{
+                  if(sent.error){
+                    return {
+                      status: 400,
+                      error:'error',
+                      data: "There was an issue sending your reset password link to the email you provided"
+                    };
+                  }else {
+                    return {
+                      status: 200,
+                      message: "success",
+                      data: "An email has been sent to you to reset your password."
+                    };
+                  }
+                });
+
+          }else{
+            return {
+              data: 'Reset password error! User not found!',
+              status: 400,
+              error:'error'
+            };
+          }
+        })
+
   },
 
   updatePassword:function updatePassword(req){
