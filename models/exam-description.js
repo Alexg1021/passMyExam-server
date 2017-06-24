@@ -13,6 +13,7 @@ var ExamDescriptionSchema = new mongoose.Schema({
   totalQuestions: {type: Number, default: null},
   price: {type: Number, default: null},
   isActive: {type: Boolean, default:true},
+  featured:{type:Boolean, default: false},
   timeAllowed: [{type: Number, default: null}],
   primaryImage: {thumb: String, medium: String, fileType:String, original:String},
   secondaryImage:{thumb: String, medium: String, fileType:String, original:String},
