@@ -99,6 +99,17 @@ router.route('/get-my-exams/:id')
           })
     });
 
+//route for saving purchased exams
+router.route('/get-completed-exams/:id')
+    .get((req, res)=> {
+      UserController.getCompletedExams(req)
+          .then((data)=> {
+            res.json(data);
+          }, (err)=> {
+            res.json(err);
+          })
+    });
+
 
 //route for saving purchased exams
 router.route('/update-password/:id')

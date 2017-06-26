@@ -6,6 +6,7 @@ import path from 'path';
 // const User = models.default.User;
 import User from '../models/user';
 import Order from '../models/order';
+import Exam from '../models/exam';
 
 import mongoose from 'mongoose';
 import q from 'q';
@@ -172,6 +173,24 @@ const UserController = {
         .exec()
         .then((res)=>{
           return res.examsPurchased;
+        })
+        .catch(handleError);
+  },
+
+
+  getCompletedExams: function getCompletedExams(req){
+    return Exam.find({user: req.params.id, completed:true})
+        .populate('examResults')
+        .populate({
+          path:'examDescription',
+          populate:{
+            path:'examType'
+          }
+        })
+        .sort({endTime:-1})
+        .exec()
+        .then((res)=>{
+          return res;
         })
         .catch(handleError);
   },
