@@ -4,15 +4,28 @@ import express from 'express';
 import UserController from '../../controllers/user.controller';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
+import bcrypt from 'bcrypt-nodejs';
 const Encryption = require('../../encryption/password-encryption.js');
 import User from '../../models/user';
 import Mailgun from 'mailgun-js';
 const router = express.Router();
+const saltRounds = bcrypt.genSalt(10, (err, result)=>{
+  return result;
+});
 
 function validPassword(pass){
   let re = new RegExp("^(?=.*[0-9])(?=.*[A-Za-z])[a-zA-Z0-9!@#$%^&*]{8,15}");
   return !!re.test(pass);
 }
+
+ function check(secretText, hash) {
+   // Load hash from your password DB.
+   bcrypt.compare(secretText, hash, (err, callback)=> {
+     console.log('error', err);
+     console.log('success', callback);
+     return callback;
+   });
+ }
 
 
 router.post('/login', (req, res) => {
@@ -25,7 +38,8 @@ router.post('/login', (req, res) => {
           if (user.isActive) {
             // login as normal
             // check if the password from request matches the encrypted hashedPassword
-            Encryption.check(req.body.password, hashedPassword).then((resp) => {
+
+            bcrypt.compare(req.body.password, hashedPassword, (err, resp)=>{
               if (resp) {
                 // let userName = user.firstName + ' ' + user.lastName;
                 var data = {
@@ -85,56 +99,122 @@ router.post('/new-user', (req, res) =>{
                   res.json({status: 400, data:'This username already exists! Please choose a different username.', error: 'userName'});
                   res.sendStatus(400);
                 }else{
-                  Encryption.encrypt(password)
-                      .then((hash)=> {
-                        let user = new User({
-                          email: email,
-                          password: hash,
-                          firstName: firstName,
-                          lastName: lastName,
-                          userName: userName
-                        });
-                        return user.save(function (data) {
 
-                          // let userName = user.firstName + ' ' + user.lastName;
-                          let newUser = {
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            userName: userName,
-                            _id: user._id,
-                            isAdmin: user.isAdmin,
-                            emailConfirmed: user.emailConfirmed,
-                            email: user.email
-                          };
+                  bcrypt.hash(password, saltRounds, null, (err, hash)=>{
+                    console.log('the error', err);
+                    console.log('the new hash', hash);
 
-                          let mailgun = new Mailgun({apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
+                    let user = new User({
+                      email: email,
+                      password: hash,
+                      firstName: firstName,
+                      lastName: lastName,
+                      userName: userName
+                    });
+                    return user.save(function (data) {
 
-                          let sendData = {
-                            //Specify email data
-                            from: 'myexam.pe@gmail.com',
-                            //The email to contact
-                            to: user.email,
-                            //Subject and text data
-                            subject: 'Action Required: Confirm Your Account',
-                            html: `Thanks for registering!<br/><br/> Please confirm your email ${user.email} by clicking the link below.  Best of luck on your Professional Engineering Exams and welcome to Pass-MyExam.<br/><a href="http://localhost:8080/#/dashboard">Click here to verify your account</a><br/><br/>Sincerely,<br/>The Pass-MyExam Team`
-                          };
-                          //Invokes the method to send emails given the above data with the helper library
-                          mailgun.messages().send(sendData, function (err, body) {
+                      // let userName = user.firstName + ' ' + user.lastName;
+                      let newUser = {
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        userName: userName,
+                        _id: user._id,
+                        isAdmin: user.isAdmin,
+                        emailConfirmed: user.emailConfirmed,
+                        email: user.email
+                      };
 
-                            if (err) {
-                              res.render('error', {error: err});
-                            }
-                            else {
-                              res.json({
-                                token: jwt.sign(newUser, process.env.JWT_SECRET)
-                              });
-                            }
+                      let mailgun = new Mailgun({apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
+
+                      let sendData = {
+                        //Specify email data
+                        from: 'myexam.pe@gmail.com',
+                        //The email to contact
+                        to: user.email,
+                        //Subject and text data
+                        subject: 'Action Required: Confirm Your Account',
+                        html: `Thanks for registering!<br/><br/> Please confirm your email ${user.email} by clicking the link below.  Best of luck on your Professional Engineering Exams and welcome to Pass-MyExam.<br/><a href="http://localhost:8080/#/dashboard">Click here to verify your account</a><br/><br/>Sincerely,<br/>The Pass-MyExam Team`
+                      };
+                      //Invokes the method to send emails given the above data with the helper library
+                      mailgun.messages().send(sendData, function (err, body) {
+
+                        if (err) {
+                          res.render('error', {error: err});
+                        }
+                        else {
+                          res.json({
+                            token: jwt.sign(newUser, process.env.JWT_SECRET)
                           });
-                        }, function (err) {
-                          res.json({status: 500, error: `There was an error saving the user: ${err}`});
-                          res.status(500);
-                        });
+                        }
                       });
+                    }, function (err) {
+                      res.json({status: 500, error: `There was an error saving the user: ${err}`});
+                      res.status(500);
+                    });
+
+
+                  });
+
+
+                //   /******Current Encryptoin Method******/
+                //   Encryption.encrypt(password)
+                //       .then((hash)=> {
+                //
+                //
+                //         let user = new User({
+                //           email: email,
+                //           password: hash,
+                //           firstName: firstName,
+                //           lastName: lastName,
+                //           userName: userName
+                //         });
+                //         return user.save(function (data) {
+                //
+                //           // let userName = user.firstName + ' ' + user.lastName;
+                //           let newUser = {
+                //             firstName: user.firstName,
+                //             lastName: user.lastName,
+                //             userName: userName,
+                //             _id: user._id,
+                //             isAdmin: user.isAdmin,
+                //             emailConfirmed: user.emailConfirmed,
+                //             email: user.email
+                //           };
+                //
+                //           let mailgun = new Mailgun({apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
+                //
+                //           let sendData = {
+                //             //Specify email data
+                //             from: 'myexam.pe@gmail.com',
+                //             //The email to contact
+                //             to: user.email,
+                //             //Subject and text data
+                //             subject: 'Action Required: Confirm Your Account',
+                //             html: `Thanks for registering!<br/><br/> Please confirm your email ${user.email} by clicking the link below.  Best of luck on your Professional Engineering Exams and welcome to Pass-MyExam.<br/><a href="http://localhost:8080/#/dashboard">Click here to verify your account</a><br/><br/>Sincerely,<br/>The Pass-MyExam Team`
+                //           };
+                //           //Invokes the method to send emails given the above data with the helper library
+                //           mailgun.messages().send(sendData, function (err, body) {
+                //
+                //             if (err) {
+                //               res.render('error', {error: err});
+                //             }
+                //             else {
+                //               res.json({
+                //                 token: jwt.sign(newUser, process.env.JWT_SECRET)
+                //               });
+                //             }
+                //           });
+                //         }, function (err) {
+                //           res.json({status: 500, error: `There was an error saving the user: ${err}`});
+                //           res.status(500);
+                //         });
+                //
+                //
+                //       });
+                //
+                // /******Current Encryptoin Method******/
+
+
                 }
               })
         }
@@ -182,5 +262,32 @@ router.route('/reset-password')
 //    res.json(err);
 //  });
 //});
+
+
+/******Current Method********/
+// Encryption.check(req.body.password, hashedPassword)
+//    .then((resp) => {
+//      console.log(resp);
+//   if (resp) {
+//     // let userName = user.firstName + ' ' + user.lastName;
+//     var data = {
+//       firstName: user.firstName,
+//       lastName: user.lastName,
+//       _id: user._id,
+//       isAdmin: user.isAdmin,
+//       emailConfirmed:user.emailConfirmed,
+//       email: user.email
+//     };
+//
+//     res.json({
+//       token: jwt.sign(data, process.env.JWT_SECRET)
+//     });
+//   } else {
+//     res.json({status: 400, error: 'Authentication error!'});
+//     res.sendStatus(400);
+//   }
+// });
+//
+/******Current Method********/
 
 export default router;
