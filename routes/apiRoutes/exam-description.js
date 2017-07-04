@@ -51,4 +51,14 @@ router.route('/:id')
           });
     });
 
+router.route('/featured-exams')
+    .post((req, res)=>{
+      ExamDescriptionController.getFeaturedExams(req)
+          .then((data)=>{
+            res.json(data);
+          }, (err)=>{
+            res.json(err);
+          })
+    });
+
 export default router;

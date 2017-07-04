@@ -16,9 +16,8 @@ function handleError(err) {
 const ExamDescriptionController = {
 
   getAll: function getAll() {
-    return ExamDescription.find({deletedAt:null})
+    return ExamDescription.find({deletedAt:null, "isActive":true})
         .populate({path: 'examType', populate:{path: 'industry'}})
-        .sort({isActive:-1})
         .exec()
         .then((res) => {
           return res;
@@ -106,6 +105,15 @@ const ExamDescriptionController = {
               })
         }).catch(handleError)
   },
+
+  getFeaturedExams:function getFeaturedExams(req){
+    return ExamDescription.find({'featured':true, "isActive": true})
+        .populate({path: 'examType', populate:{path: 'industry'}})
+        .exec()
+        .then((exams)=>{
+          return exams;
+        }).catch(handleError);
+  }
 
 };
 
