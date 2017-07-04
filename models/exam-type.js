@@ -9,6 +9,8 @@ var ExamTypeSchema = new mongoose.Schema({
   description: String,
   shortDescription: String,
   industry: {type: mongoose.Schema.Types.ObjectId, ref: 'Industry'},
+  primaryImage: {thumb: String, medium: String, fileType:String, original:String},
+  secondaryImage:{thumb: String, medium: String, fileType:String, original:String},
   active: {type: Boolean, default: true},
   createdAt: {type: Date, default: Date.now},
   updatedAt: {type: Date, default: Date.now},
