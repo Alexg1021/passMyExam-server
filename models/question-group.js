@@ -7,6 +7,8 @@ import mongoose from 'mongoose';
 var QuestionGroupSchema = new mongoose.Schema({
   question: {type: String, default: null},
   subText: [{type:String, default:null}],
+  tag:{type: String, default: null},
+  categoryType:{type: String, default: null},
   answers: [{type: mongoose.Schema.Types.ObjectId, ref: 'Answer'}],
   examDescription:{type: mongoose.Schema.Types.ObjectId, ref: 'ExamDescription'},
   examType: {type: mongoose.Schema.Types.ObjectId, ref: 'ExamType'},
