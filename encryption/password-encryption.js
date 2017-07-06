@@ -3,23 +3,26 @@ const saltRounds = 10;
 
 let Encryption = {
   encrypt: function (secretText) {
-    return bcrypt.hash(secretText, saltRounds).then(function(hash) {
-      console.log(hash);
-      // Store hash in your password DB.
-      return hash;
-    });
+    console.log('inside the encrypt');
+    //Secret text is the new desired password
+    new Promise((resolve)=>{
+      bcrypt.hash(secretText, saltRounds, (err, hash)=>{
+        resolve(hash);
+      })
+    })
   },
+
   check: function (secretText, hash) {
-    // Load hash from your password DB.
+    console.log('inside the check');
+    //secret text is the sent password
+    //hash is the old password on user model
+    let response;
+    new Promise((resolve)=>{
+      bcrypt.compare(secretText, hash, (err, resp)=>{
 
-    return bcrypt.compare(secretText, hash)
-        .then((res)=>{
-          console.log('the res', res);
-          return res;
-
-        }, (err)=>{
-          console.log('the err', err);
-        });
+        resolve(resp);
+      });
+    })
   }
 };
 

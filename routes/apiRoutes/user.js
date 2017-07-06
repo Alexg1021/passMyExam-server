@@ -3,6 +3,12 @@
 import express from 'express';
 import UserController from '../../controllers/user.controller';
 import jwt from 'jsonwebtoken';
+import User from '../../models/user';
+import bcrypt from 'bcrypt-nodejs';
+
+const saltRounds = bcrypt.genSalt(10, (err, result)=>{
+  return result;
+});
 
 import fs from 'fs';
 
@@ -114,17 +120,31 @@ router.route('/get-completed-exams/:id')
 //route for saving purchased exams
 router.route('/update-password/:id')
     .put((req, res)=> {
-      UserController.updatePassword(req)
-          .then((data)=> {
-            if(data.error){
-              res.json({status: 400, error:'The old password does not match our records'});
-              res.sendStatus(400);
-            }
-            res.json(data);
+      let creds = req.body;
+      return User.findOne({_id:req.params.id})
+          .select('+password')
+          .exec()
+          .then((user)=>{
+            console.log('the user', user);
+            bcrypt.compare(creds.password, user.password, (err, resp)=>{
+              console.log('the resp', resp);
+              if (resp){
+                bcrypt.hash(creds.newPassword, saltRounds, null, (err, hash)=>{
+                  console.log('the hash', hash);
+                  user.password = hash;
+                  return user.update(user)
+                      .then((response)=>{
+                        console.log('the response', response);
+                        res.json(response);
+                      });
+                });
 
-          }, (err)=> {
-            res.json(err);
-          })
+              }else{
+                res.json({status: 400, error:'The old password does not match our records'});
+                res.sendStatus(400);
+              }
+            })
+          });
     });
 
 
