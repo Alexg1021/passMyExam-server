@@ -154,67 +154,6 @@ router.post('/new-user', (req, res) =>{
 
 
                   });
-
-
-                //   /******Current Encryptoin Method******/
-                //   Encryption.encrypt(password)
-                //       .then((hash)=> {
-                //
-                //
-                //         let user = new User({
-                //           email: email,
-                //           password: hash,
-                //           firstName: firstName,
-                //           lastName: lastName,
-                //           userName: userName
-                //         });
-                //         return user.save(function (data) {
-                //
-                //           // let userName = user.firstName + ' ' + user.lastName;
-                //           let newUser = {
-                //             firstName: user.firstName,
-                //             lastName: user.lastName,
-                //             userName: userName,
-                //             _id: user._id,
-                //             isAdmin: user.isAdmin,
-                //             emailConfirmed: user.emailConfirmed,
-                //             email: user.email
-                //           };
-                //
-                //           let mailgun = new Mailgun({apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
-                //
-                //           let sendData = {
-                //             //Specify email data
-                //             from: 'myexam.pe@gmail.com',
-                //             //The email to contact
-                //             to: user.email,
-                //             //Subject and text data
-                //             subject: 'Action Required: Confirm Your Account',
-                //             html: `Thanks for registering!<br/><br/> Please confirm your email ${user.email} by clicking the link below.  Best of luck on your Professional Engineering Exams and welcome to Pass-MyExam.<br/><a href="http://localhost:8080/#/dashboard">Click here to verify your account</a><br/><br/>Sincerely,<br/>The Pass-MyExam Team`
-                //           };
-                //           //Invokes the method to send emails given the above data with the helper library
-                //           mailgun.messages().send(sendData, function (err, body) {
-                //
-                //             if (err) {
-                //               res.render('error', {error: err});
-                //             }
-                //             else {
-                //               res.json({
-                //                 token: jwt.sign(newUser, process.env.JWT_SECRET)
-                //               });
-                //             }
-                //           });
-                //         }, function (err) {
-                //           res.json({status: 500, error: `There was an error saving the user: ${err}`});
-                //           res.status(500);
-                //         });
-                //
-                //
-                //       });
-                //
-                // /******Current Encryptoin Method******/
-
-
                 }
               })
         }

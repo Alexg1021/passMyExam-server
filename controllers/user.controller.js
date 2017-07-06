@@ -7,6 +7,7 @@ import path from 'path';
 import User from '../models/user';
 import Order from '../models/order';
 import Exam from '../models/exam';
+import bcrypt from 'bcrypt-nodejs';
 
 import mongoose from 'mongoose';
 import q from 'q';
@@ -16,6 +17,10 @@ import ExamController from './exam.controller';
 import Emailer from '../mailer/mailer';
 
 const clientURL = process.env.CLIENT_URL;
+
+const saltRounds = bcrypt.genSalt(10, (err, result)=>{
+  return result;
+});
 
 mongoose.Promise = Promise;
 
@@ -293,28 +298,30 @@ const UserController = {
         })
   },
 
+  //Not Being used, the save is happening inside of the route method
   updatePassword:function updatePassword(req){
+    console.log('second location');
     return User.findOne({_id:req.params.id})
         .select('+password')
         .exec()
         .then((user)=>{
+          console.log('third location');
           let creds = req.body;
 
-          return Encryption.check(creds.password, user.password).then((resp) => {
-            if(resp){
-              return Encryption.encrypt(creds.newPassword)
-                  .then((hash)=>{
-                    user.password = hash;
-                    return user.update(user)
-                        .then((res) => {
-                          return res;
-                        });
-                  });
-            }else{
-              return {error:'Error!'};
-            }
-          });
+            //True moves on to encrypting the new password then saving the updated password
+            bcrypt.hash(creds.newPassword, saltRounds, null, (err, hash)=>{
 
+              //update the new user with the new hash
+              console.log('the hash', hash);
+              if(hash !== user.password){
+                User.findByIdAndUpdate(user._id, {$set: {password: hash}}, {new: false}, (err, res)=>{
+                  console.log(' the res to go,', res);
+                  return res;
+                });
+              }else{
+                return {error: 'ERROR!'};
+              }
+            });
         });
   }
 
