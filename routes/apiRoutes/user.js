@@ -5,6 +5,7 @@ import UserController from '../../controllers/user.controller';
 import jwt from 'jsonwebtoken';
 import User from '../../models/user';
 import bcrypt from 'bcrypt-nodejs';
+import moment from 'moment';
 
 const saltRounds = bcrypt.genSalt(10, (err, result)=>{
   return result;
@@ -125,23 +126,21 @@ router.route('/update-password/:id')
           .select('+password')
           .exec()
           .then((user)=>{
-            console.log('the user', user);
             bcrypt.compare(creds.password, user.password, (err, resp)=>{
-              console.log('the resp', resp);
+              console.log('the err', err);
+              console.log('the resp;,', resp);
               if (resp){
                 bcrypt.hash(creds.newPassword, saltRounds, null, (err, hash)=>{
-                  console.log('the hash', hash);
                   user.password = hash;
                   return user.update(user)
                       .then((response)=>{
-                        console.log('the response', response);
                         res.json(response);
                       });
                 });
 
               }else{
-                res.json({status: 400, error:'The old password does not match our records'});
-                res.sendStatus(400);
+                console.log('sending this becakuse false;');
+                return res.json({status: 400, error:'The old password does not match our records'});
               }
             })
           });

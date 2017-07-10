@@ -15,6 +15,7 @@ import Encryption from '../encryption/password-encryption';
 
 import ExamController from './exam.controller';
 import Emailer from '../mailer/mailer';
+import moment from 'moment';
 
 const clientURL = process.env.CLIENT_URL;
 
@@ -201,7 +202,10 @@ const UserController = {
   },
 
   sendPasswordResetEmail:function sendPasswordResetEmail(req){
-    return User.findOne({email: req.body.email})
+    let expiration = moment().add(1, 'hours');
+
+    //{age: 17}, {$set:{name:"Naomi"}}, {new: true}
+    return User.findOneAndUpdate({email: req.body.email}, {$set:{passwordReset:{exp:expiration}}}, {new:true})
         .select('+password')
         .exec()
         .then((user)=>{
@@ -236,6 +240,8 @@ const UserController = {
               error:'error'
             };
           }
+
+
         })
   },
 
@@ -245,6 +251,7 @@ const UserController = {
         .select('+password')
         .exec()
         .then((user)=>{
+
           //Check if user is returned
           if(user){
             //Check if password matches hash
