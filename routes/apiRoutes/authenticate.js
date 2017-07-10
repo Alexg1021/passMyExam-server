@@ -19,7 +19,6 @@ function checkExpiration (time) {
   return moment().isBefore(time);
 }
 
-
 function validPassword(pass){
   let re = new RegExp("^(?=.*[0-9])(?=.*[A-Za-z])[a-zA-Z0-9!@#$%^&*]{8,15}$");
   return !!re.test(pass);
@@ -175,6 +174,10 @@ router.get('/logout', (req, res) => {
   res.sendStatus(200);
 });
 
+
+/*
+* Forgot password request
+* */
 router.route('/forgot-password')
     .post((req, res)=> {
       UserController.sendPasswordResetEmail(req)
@@ -188,6 +191,11 @@ router.route('/forgot-password')
           })
     });
 
+
+/*
+* Reset Password request
+*
+* */
 router.route('/reset-password')
     .post((req, res)=> {
       let bundle = req.body;
@@ -245,32 +253,5 @@ router.route('/reset-password')
 //    res.json(err);
 //  });
 //});
-
-
-/******Current Method********/
-// Encryption.check(req.body.password, hashedPassword)
-//    .then((resp) => {
-//      console.log(resp);
-//   if (resp) {
-//     // let userName = user.firstName + ' ' + user.lastName;
-//     var data = {
-//       firstName: user.firstName,
-//       lastName: user.lastName,
-//       _id: user._id,
-//       isAdmin: user.isAdmin,
-//       emailConfirmed:user.emailConfirmed,
-//       email: user.email
-//     };
-//
-//     res.json({
-//       token: jwt.sign(data, process.env.JWT_SECRET)
-//     });
-//   } else {
-//     res.json({status: 400, error: 'Authentication error!'});
-//     res.sendStatus(400);
-//   }
-// });
-//
-/******Current Method********/
 
 export default router;
