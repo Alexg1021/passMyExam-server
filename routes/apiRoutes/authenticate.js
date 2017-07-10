@@ -8,10 +8,22 @@ import bcrypt from 'bcrypt-nodejs';
 const Encryption = require('../../encryption/password-encryption.js');
 import User from '../../models/user';
 import Mailgun from 'mailgun-js';
+import moment from 'moment';
 const router = express.Router();
 const saltRounds = bcrypt.genSalt(10, (err, result)=>{
   return result;
 });
+
+
+function checkExpiration (time) {
+  return moment().isBefore(time);
+}
+
+
+function validPassword(pass){
+  let re = new RegExp("^(?=.*[0-9])(?=.*[A-Za-z])[a-zA-Z0-9!@#$%^&*]{8,15}$");
+  return !!re.test(pass);
+}
 
 function validPassword(pass){
   let re = new RegExp("^(?=.*[0-9])(?=.*[A-Za-z])[a-zA-Z0-9!@#$%^&*]{8,15}");
@@ -101,8 +113,6 @@ router.post('/new-user', (req, res) =>{
                 }else{
 
                   bcrypt.hash(password, saltRounds, null, (err, hash)=>{
-                    console.log('the error', err);
-                    console.log('the new hash', hash);
 
                     let user = new User({
                       email: email,
@@ -180,15 +190,49 @@ router.route('/forgot-password')
 
 router.route('/reset-password')
     .post((req, res)=> {
-      UserController.resetPassword(req)
-          .then((data)=> {
-            if(data.status != 200){
-              res.json(data);
-              res.sendStatus(400);
+      let bundle = req.body;
+
+      User.findOne({email: bundle.email})
+          .select('+password')
+          .exec()
+          .then((user)=>{
+
+            if(user){
+              if(bundle.oldPassHash == user.password && checkExpiration(user.passwordReset.exp)){
+                if(validPassword(bundle.newPassword)){
+                  bcrypt.hash(bundle.newPassword, saltRounds, null, (err, hash)=>{
+                    if(hash){
+                      user.password = hash;
+                      user.passwordReset.exp = null;
+                      return user.update(user)
+                          .then((response)=>{
+                            res.json({
+                              status: 200,
+                              message: "success",
+                              data: "An email has been sent to you to reset your password."
+                            });
+                          })
+                    }else{
+                      return res.json({data: 'There was an issue resetting your password. Please ensure the email was correct and try again.', status: 400, error:'error'});
+                    }
+                  })
+                }else{
+                //  Send invalid password
+                  res.json({data: 'There was an issue resetting your password. Please ensure the email was correct and try again.', status: 400, error:'error'});
+                  res.sendStatus(400);
+                }
+              }else{
+              //  Send expired or wrong token error
+                console.log('should be expired');
+                res.json({data: 'Error! The reset token is incorrect or has expired, please request a new password token and try again.', status: 400, error:'error'});
+                res.sendStatus(400);
+              }
             }else{
-              res.json(data);
+            //  Send No user found error
+              res.json({data: 'Reset password error! No User with this email was found. Check your email and try again.', status: 400, error:'error'});
+              res.sendStatus(400);
             }
-          })
+          });
     });
 
 //router.get('/refresh', jwt.protect, function (req, res) {

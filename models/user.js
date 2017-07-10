@@ -16,7 +16,7 @@ var UserSchema = new mongoose.Schema({
   isAdmin: {type: Boolean, default: false},
   passwordReset: {
     token: String,
-    exp: {type: Date, default: Date.now}
+    exp: {type: Date, default: null}
   },
   examsPurchased: [{type: mongoose.Schema.Types.ObjectId, ref: 'Exam'}],
   isActive: {type: Boolean, default: true},

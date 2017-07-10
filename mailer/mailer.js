@@ -81,7 +81,7 @@ let Emailer ={
       //Subject and text data
       subject: `Pass-MyExam: Your Password Reset Link`,
       html: `<div style="margin: 10px 0;">Hello,</div>
-                <div style="margin: 10px 0;">You recently requested a new password. Follow the link below to reset your password</div>
+                <div style="margin: 10px 0;">You recently requested a new password. Follow the link below to reset your password--You will have 1 hour to reset your password.</div>
                 <div style="margin: 10px 0;"></div>
                 <div style="margin: 10px 0;"><a href="${options.resetUrl}">Click Here To Set Your New Password!</a></div>
                 <div style="margin: 10px 0;"></div>
