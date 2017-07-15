@@ -11,6 +11,18 @@ let Emailer ={
 
   purchaseConfirmation: function (options){
 
+     let payType = function payType(){
+
+       if(options.paymentOptions.brand){
+
+         return `${options.paymentOptions.brand} - ************${options.paymentOptions.last4}`;
+
+       }else{
+
+         return `${options.paymentOptions.payer.payment_method}`;
+       }
+    };
+
     let sendData = {
       //Specify email data
       from: 'myexam.pe@gmail.com',
@@ -41,7 +53,7 @@ let Emailer ={
                             </tr>
                             <tr>
                                 <th>Payment Type</th>
-                                <td>${options.paymentOptions.brand} - ************${options.paymentOptions.last4}</td>
+                                <td>${payType()}</td>
                             </tr>
                             <tr>
                                 <th>Amount</th>
@@ -67,6 +79,7 @@ let Emailer ={
 
         }, (err)=>{
 
+          console.log('unsuccessful', err);
           return err;
         });
   },

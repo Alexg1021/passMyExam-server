@@ -136,6 +136,46 @@ const OrderController = {
           return newErr;
         });
 
+  },
+
+  completePayPalTransaction: function completePayPalTransaction (req){
+
+    let orderId = uuid.v4().split('-').pop();
+    let bundle = req.body;
+    bundle.orderId = orderId;
+    let user = bundle.user;
+    bundle.user = bundle.user._id;
+
+    let newOrder = new Order(bundle);
+
+    return newOrder.save()
+        .then((ord)=>{
+
+          let orderOptions = {
+            order:ord,
+            examDescription:bundle.examDescription,
+            user:user,
+            paymentOptions:bundle.source
+          };
+          // console.log('the order options', orderOptions);
+          return Emailer.purchaseConfirmation(orderOptions)
+              .then((res)=>{
+
+                return ord;
+              }, (err)=>{
+                let newErr = {status: err.statusCode, type: err.type, message: err.message, error:true};
+                return newErr;
+              });
+        },(err)=>{
+      let newErr = {status: err.statusCode, type: err.type, message: err.message, error:true};
+      return newErr;
+    });
+
+
+
+  //  make the request to use paypal
+  //  Send back the id for success
+
   }
 
 };

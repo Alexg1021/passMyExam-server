@@ -144,6 +144,7 @@ const UserController = {
       user:req.params.id,
       order:order._id
     };
+    // console.log('inside the purchase exam method. The data. ',data);
     return ExamController.create(data)
         .then((exam)=>{
           return User.findOne({_id: req.params.id})

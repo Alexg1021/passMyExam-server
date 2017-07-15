@@ -62,4 +62,17 @@ router.route('/send-payment')
           });
     });
 
+router.route('/request-paypal')
+    .post((req, res)=>{
+      OrderController.completePayPalTransaction(req)
+          .then((data)=>{
+            if(data.error){
+              res.json(data);
+              res.status(data.status);
+            }else{
+              res.json(data);
+            }
+          })
+    });
+
 export default router;
