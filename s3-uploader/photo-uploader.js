@@ -134,6 +134,10 @@ export default function photoUploader(payload, cb) {
       } else {
         cb({ versions });
       }
+
+      fs.unlink(file, (err) => {
+        if (err) throw err;
+      });
     });
   }
 }

@@ -11,6 +11,8 @@ import mongoose from 'mongoose';
 import q from 'q';
 import moment from 'moment';
 
+import Emailer from '../mailer/mailer';
+
 mongoose.Promise = Promise;
 
 function handleError(err) {
@@ -183,6 +185,7 @@ const ExamController = {
     return Exam.findOne({_id: req.params.id})
         .populate('testQuestions')
         .populate('examDescription')
+        .populate('user')
         .exec()
         .then((exam) => {
           //Calculate results for the completed exam
@@ -213,9 +216,22 @@ const ExamController = {
                 exam.completed = true;
                 exam.active = false;
                 exam.examResults = examRes._id;
+
+                console.log(examRes);
+
                 return exam.update(exam)
                     .then((res)=>{
-                      return res;
+                      //Email the user with their results
+                      let orderOptions = {
+                        user:exam.user,
+                        examResults:examRes
+                      };
+                      console.log('user email object', orderOptions);
+                      return Emailer.userExamResults(orderOptions)
+                          .then((response)=>{
+                            console.log(response);
+                            return response;
+                          });
                     });
               });
         }).catch(handleError);

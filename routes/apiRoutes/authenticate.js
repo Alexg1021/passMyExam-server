@@ -142,8 +142,12 @@ router.post('/new-user', (req, res) =>{
                         to: user.email,
                         //Subject and text data
                         subject: 'Action Required: Confirm Your Account',
-                        html: `Thanks for registering!<br/><br/> Please confirm your email ${user.email} by clicking the link below.  Best of luck on your Professional Engineering Exams and welcome to Pass-MyExam.<br/><a href="http://localhost:8080/#/dashboard">Click here to verify your account</a><br/><br/>Sincerely,<br/>The Pass-MyExam Team`
+                        html: `Thanks for registering!<br/><br/> Please confirm your email ${user.email} by clicking the link below.  Best of luck on your Professional Engineering Exams and welcome to Pass-MyExam.<br/><br/>Sincerely,<br/>The Pass-MyExam Team`
                       };
+
+                      //Verify Account with this
+                      //<a href="${process.env.CLIENT_URL}dashboard">Click here to verify your account</a>
+
                       //Invokes the method to send emails given the above data with the helper library
                       mailgun.messages().send(sendData, function (err, body) {
 

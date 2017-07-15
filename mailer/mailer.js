@@ -98,6 +98,75 @@ let Emailer ={
         });
   },
 
+  userExamResults: function (options){
+
+    let percent = options.examResults.answeredCorrectly / options.examResults.totalQuestions;
+    percent = Math.floor(percent * 100);
+
+    let sendData = {
+      //Specify email data
+      from: 'myexam.pe@gmail.com',
+      //The email to contact
+      to: options.user.email,
+      //Subject and text data
+
+      /*
+       * { __v: 0,
+       exam: 595c2c5759c8a153af5e3b42,
+       _id: 59696cfe704c324d921f61d7,
+       deletedAt: null,
+       updatedAt: 2017-07-15T01:16:46.686Z,
+       createdAt: 2017-07-15T01:16:46.686Z,
+       averageTimePerQuestion: null,
+       answeredIncorrectly: 3,
+       answeredCorrectly: 0,
+       totalTime: null,
+       totalQuestions: 31,
+       answeredQuestions: 3 }
+       * */
+      subject: `Way to Go! View Your Exam Results`,
+      html: `<div>Hello ${options.user.firstName} ${options.user.lastName},</div>
+                <p>Congratulations on finishing your exam. Below are your exam results! To view an in depth analysis of your results navigate over to
+                 <a href="${process.env.CLIENT_URL}/my-pme/my-exam-results" target="_blank">${process.env.EMAIL_CLIENT_URL}</a> to see more.</p>
+              <div>
+                        <table>
+                            <tbody style="text-align: left;">
+                            <tr>
+                                <th>Total Questions</th>
+                                <td style="text-transform: uppercase;">${options.examResults.totalQuestions}</td>
+                            </tr>
+                            <tr>
+                                <th>Questions Answered</th>
+                                <td>${options.examResults.answeredQuestions}</td>
+                            </tr>
+                            <tr>
+                                <th>Questions Answered Correctly</th>
+                                <td>${options.examResults.answeredCorrectly}</td>
+                            </tr>
+                            <tr>
+                                <th>Exam Score</th>
+                                <td>${percent}%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+            <p>Your path to owning your future is already underway. Continue to push yourself by taking another exam and learning about your test taking skills with us today!</p>
+            <p><small>If you feel you have received this email by mistake please contact us immediately.</small></p>
+            <p>Best Regards,</p>
+            <p>The Pass-MyExam Team</p>`
+    };
+
+    return mailgun.messages().send(sendData)
+        .then((res)=>{
+
+          return res;
+
+        }, (err)=>{
+
+          return err;
+        });
+  }
+
 };
 
 module.exports = Emailer;
