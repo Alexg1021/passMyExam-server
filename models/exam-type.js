@@ -6,6 +6,8 @@ import mongoose from 'mongoose';
 
 var ExamTypeSchema = new mongoose.Schema({
   typeName: String,
+  shortType:String,
+  abbr:String,
   description: String,
   shortDescription: String,
   industry: {type: mongoose.Schema.Types.ObjectId, ref: 'Industry'},
