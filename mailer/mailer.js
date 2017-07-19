@@ -178,7 +178,46 @@ let Emailer ={
 
           return err;
         });
-  }
+  },
+
+
+  sendFeedback: function (options){
+
+    let sendData = {
+      //Specify email data
+      from: 'myexam.pe@gmail.com',
+      //The email to contact
+      to: 'myexam.pe@gmail.com',
+      //Subject and text data
+      subject: `User Feedback: ${options.subject}`,
+      html: `<div style="margin: 10px 0;">Hi Team,</div>
+                <div style="margin: 10px 0;">You have recently received feedback from a Pass-MyExam User. You can view the user details and message below:</div>
+                <div style="margin: 10px 0;"></div>
+                <div style="margin: 10px 0;">
+                  <ul>
+                      <li>User: ${options.user.firstName} ${options.user.lastName}</li>
+                      <li>Email: ${options.user.email}</li>
+                      <li>User Since: ${moment(options.user.createdAt).format('MM-DD-YYYY')}</li>
+                  </ul>
+                </div>
+                <div style="margin: 10px 0;"></div>
+                <div style="margin: 10px 0;">Message:</div>
+                <div style="margin: 10px 0;" style="color:red;">${options.message}</div>
+                <div style="margin: 10px 0;"></div>
+                <div style="margin: 10px 0;"><small style="font-style: italic;">"Put your heart, mind, and soul into even your smallest acts. This is the secret of success."</small></div>
+                <div style="margin: 10px 0;"></div>
+                <div style="margin: 10px 0;">Best Regards</div>`
+    };
+
+    return mailgun.messages().send(sendData)
+        .then((res)=>{
+          return {data:'success'};
+        }, (err)=>{
+          return {error: 'Error'};
+        });
+  },
+
+
 
 };
 

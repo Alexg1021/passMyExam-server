@@ -3,6 +3,7 @@
 import express from 'express';
 import CommunityController from '../../controllers/community.controller';
 import fs from 'fs';
+import Emailer from '../../mailer/mailer';
 
 const router = express.Router();
 
@@ -48,5 +49,15 @@ router.route('/badges/:id')
           }, (err) => {
             res.json(err);
           });
+    });
+
+router.route('/send-feedback')
+    .post((req, res)=>{
+      Emailer.sendFeedback(req.body)
+          .then((data)=>{
+           res.json(data);
+          }, (err)=>{
+            res.json(err);
+          })
     });
 export default router;
