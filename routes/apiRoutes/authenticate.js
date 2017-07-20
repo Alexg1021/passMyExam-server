@@ -144,8 +144,11 @@ router.post('/new-user', (req, res) =>{
                         //The email to contact
                         to: user.email,
                         //Subject and text data
-                        subject: 'Action Required: Confirm Your Account',
-                        html: `Thanks for registering!<br/><br/> Please confirm your email ${user.email} by clicking the link below.  Best of luck on your Professional Engineering Exams and welcome to Pass-MyExam.<br/><br/>Sincerely,<br/>The Pass-MyExam Team`
+                        subject: 'Thanks for registering!',
+                        html: `Hello ${newUser.firstName} ${newUser.lastName},<br/><br/> Your new account has been created! You can begin using our application at 
+                    <a href="${process.env.CLIENT_URL}">${process.env.CLIENT_URL}</a>. Best of luck on your Professional Engineering Exams and welcome to Pass-MyExam.<br/><br/>
+                    Sincerely,<br/>The Pass-MyExam Team<br/><br/>
+                    <small style="font-style: italic;">If you feel you have received this email by mistake please contact us at immediately myexam.pe@gmail.com. Thank you.</small>`
                       };
 
                       //Verify Account with this
