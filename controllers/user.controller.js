@@ -26,7 +26,7 @@ const saltRounds = bcrypt.genSalt(10, (err, result)=>{
 mongoose.Promise = Promise;
 
 function handleError(err) {
-  console.log('inside handleError');
+  console.log('inside handleError', err);
   return err;
 }
 

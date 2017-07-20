@@ -66,26 +66,29 @@ router.post('/login', (req, res) => {
                   token: jwt.sign(data, process.env.JWT_SECRET)
                 });
               } else {
-                res.json({status: 400, error: 'Authentication error!'});
-                res.sendStatus(400);
+                res.send({status: 400, error:'Password does not match'});
+                res.statusCode = 400;
+                // res.json({status: 400, error: 'Authentication error!'});
+
               }
             });
           } else {
             // user is not activated.
-            res.json({
+            res.send({
               status: 400,
               error: 'User is no longer Active. Please contact Pass-myExam to correct the issue!'
               // resetPath:`/password-reset?hash=${hashedPassword}`
             });
-            res.sendStatus(400);
+            res.statusCode = 400;
           }
         } else {
           //Authentication Error: trouble logging in
-          res.json({status: 400, error: 'Authentication error! The user credentials were not found! Please try again.'});
-          res.sendStatus(400);
+          res.send({status: 400, error: 'Authentication error! The user credentials were not found! Please try again.'});
+          res.statusCode = 400;
         }
       }, (err) => {
-        res.json(err);
+        res.send({status: 400, error:'Authentication Error!'});
+        res.statusCode = 400;
       })
 });
 
@@ -101,14 +104,14 @@ router.post('/new-user', (req, res) =>{
   return User.findOne({email: email})
       .then((isUser)=>{
         if(isUser){
-          res.json({status: 400, data:'A user by this email already exists!', error: 'email'});
-          res.sendStatus(400);
+          res.send({status: 400, data:'A user by this email already exists!', error: 'email'});
+          res.statusCode = 400;
         }else {
           return User.findOne({userName: userName})
               .then((hasUserName)=>{
                 if(hasUserName){
-                  res.json({status: 400, data:'This username already exists! Please choose a different username.', error: 'userName'});
-                  res.sendStatus(400);
+                  res.send({status: 400, data:'This username already exists! Please choose a different username.', error: 'userName'});
+                  res.statusCode = 400;
                 }else{
 
                   bcrypt.hash(password, saltRounds, null, (err, hash)=>{
@@ -150,9 +153,11 @@ router.post('/new-user', (req, res) =>{
 
                       //Invokes the method to send emails given the above data with the helper library
                       mailgun.messages().send(sendData, function (err, body) {
-
                         if (err) {
-                          res.render('error', {error: err});
+                          console.log('error', err);
+                          res.json({
+                            token: jwt.sign(newUser, process.env.JWT_SECRET)
+                          });
                         }
                         else {
                           res.json({
@@ -161,15 +166,21 @@ router.post('/new-user', (req, res) =>{
                         }
                       });
                     }, function (err) {
-                      res.json({status: 500, error: `There was an error saving the user: ${err}`});
-                      res.status(500);
+                      res.send({status: 500, error: `There was an error saving the user: ${err}`});
+                      res.statusCode = 500;
                     });
 
 
                   });
                 }
+              }).catch((err)=>{
+                res.send({status: 400, error:'Error!', err:err});
+                res.statusCode = 400;
               })
         }
+      }).catch((err)=>{
+        res.send({status: 400, error:'Error!', err:err});
+        res.statusCode = 400;
       });
 });
 
