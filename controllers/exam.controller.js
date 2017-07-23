@@ -217,7 +217,7 @@ const ExamController = {
                 exam.active = false;
                 exam.examResults = examRes._id;
 
-                console.log(examRes);
+                // console.log(examRes);
 
                 return exam.update(exam)
                     .then((res)=>{
@@ -226,10 +226,10 @@ const ExamController = {
                         user:exam.user,
                         examResults:examRes
                       };
-                      console.log('user email object', orderOptions);
+                      // console.log('user email object', orderOptions);
                       return Emailer.userExamResults(orderOptions)
                           .then((response)=>{
-                            console.log(response);
+                            // console.log(response);
                             return response;
                           });
                     });
