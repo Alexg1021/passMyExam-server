@@ -107,8 +107,9 @@ const ExamDescriptionController = {
   },
 
   getFeaturedExams:function getFeaturedExams(req){
-    return ExamDescription.find({'featured':true, "isActive": true})
+    return ExamDescription.find({'featured':true})
         .populate({path: 'examType', populate:{path: 'industry'}})
+        .sort({isActive:-1})
         .exec()
         .then((exams)=>{
           return exams;
