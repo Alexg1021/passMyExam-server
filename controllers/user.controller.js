@@ -85,10 +85,10 @@ const UserController = {
           return res;
         }).catch(handleError);
   },
-
+  //{'name' : new RegExp(data, 'i')}
 
   findByEmail: function findByEmail(req) {
-    return User.findOne({email: req.email})
+    return User.findOne({email: new RegExp(req.email, 'i')})
         .select('+password')
         .exec()
         .then((res) => {
