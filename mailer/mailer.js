@@ -25,13 +25,14 @@ let Emailer ={
 
     let sendData = {
       //Specify email data
-      from: 'myexam.pe@gmail.com',
+      from: 'postmaster@pass-myexam.com',
       //The email to contact
       to: options.user.email,
       bcc:'myexam.pe@gmail.com',
       //Subject and text data
       subject: `Thank you for your purchase from Pass-MyExam!`,
-      html: `<div>This is to confirm your purchase from Pass-MyExam. Please review your purchase order below.</div>
+      html: `<div>Hello ${options.user.firstName},</div><br/>
+            <div>This is to confirm your purchase from Pass-MyExam. Please review your purchase order below.</div>
               <div>
                         <table>
                             <tbody>
@@ -88,7 +89,7 @@ let Emailer ={
 
     let sendData = {
       //Specify email data
-      from: 'myexam.pe@gmail.com',
+      from: 'postmaster@pass-myexam.com',
       //The email to contact
       to: options.to,
       //Subject and text data
@@ -118,7 +119,7 @@ let Emailer ={
 
     let sendData = {
       //Specify email data
-      from: 'myexam.pe@gmail.com',
+      from: 'postmaster@pass-myexam.com',
       //The email to contact
       to: options.user.email,
       //Subject and text data
@@ -185,7 +186,7 @@ let Emailer ={
 
     let sendData = {
       //Specify email data
-      from: 'myexam.pe@gmail.com',
+      from: 'postmaster@pass-myexam.com',
       //The email to contact
       to: 'myexam.pe@gmail.com',
       //Subject and text data
