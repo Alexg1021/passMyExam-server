@@ -85,7 +85,6 @@ const UserController = {
           return res;
         }).catch(handleError);
   },
-  //{'name' : new RegExp(data, 'i')}
 
   findByEmail: function findByEmail(req) {
     return User.findOne({email: new RegExp(req.email, 'i')})
@@ -95,7 +94,6 @@ const UserController = {
           return res;
         }).catch(handleError);
   },
-
 
 
   update: function update(req) {
