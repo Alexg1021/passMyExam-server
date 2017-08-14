@@ -101,13 +101,13 @@ router.post('/new-user', (req, res) =>{
   const userName = req.body.userName;
 
 
-  return User.findOne({email: email})
+  return User.findOne({email: new RegExp(email, 'i')})
       .then((isUser)=>{
         if(isUser){
           res.send({status: 400, data:'A user by this email already exists!', error: 'email'});
           res.statusCode = 400;
         }else {
-          return User.findOne({userName: userName})
+          return User.findOne({userName: new RegExp(userName, 'i')})
               .then((hasUserName)=>{
                 if(hasUserName){
                   res.send({status: 400, data:'This username already exists! Please choose a different username.', error: 'userName'});

@@ -76,4 +76,30 @@ router.route('/request-paypal')
           })
     });
 
+router.route('/promo')
+    .post((req, res)=>{
+      OrderController.createPromo(req)
+          .then((data)=>{
+            if(data.error){
+              res.json(data);
+              res.status(data.status);
+            }else{
+              res.json(data);
+            }
+          })
+    });
+
+router.route('/check-promo-code')
+    .post((req, res)=>{
+      OrderController.checkPromoCode(req)
+          .then((data)=>{
+            if(data.error){
+              res.json(data);
+              res.status(data.status);
+            }else{
+              res.json(data);
+            }
+          })
+    });
+
 export default router;

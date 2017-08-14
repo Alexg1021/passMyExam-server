@@ -4,11 +4,13 @@
 import _ from 'lodash';
 import path from 'path';
 import Order from '../models/order';
+import Promo from '../models/promo';
 import mongoose from 'mongoose';
 import q from 'q';
 import async from 'async';
 import uuid from 'uuid';
 import Emailer from '../mailer/mailer';
+import moment from 'moment';
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 mongoose.Promise = Promise;
@@ -112,9 +114,14 @@ const OrderController = {
             user:bundle.user._id,
             orderId:orderId,
             source:data.source,
-            totalAmount:bundle.price,
+            totalAmount:bundle.price / 100,
             examDescription: bundle.examDescription._id
           });
+
+         if(bundle.promo){
+           newOrder.promo.push(bundle.promo._id);
+         }
+
           return newOrder.save()
               .then((ord)=>{
 
@@ -122,8 +129,14 @@ const OrderController = {
                   order:ord,
                   examDescription:bundle.examDescription,
                   user:bundle.user,
-                  paymentOptions:data.source
+                  paymentOptions:data.source,
+                  totalPaid:bundle.price / 100
                 };
+
+
+                if(bundle.promo){
+                  orderOptions.promo = bundle.promo;
+                }
                 // console.log('the order options', orderOptions);
                 return Emailer.purchaseConfirmation(orderOptions)
                     .then((res)=>{
@@ -148,6 +161,10 @@ const OrderController = {
 
     let newOrder = new Order(bundle);
 
+    if(bundle.promo){
+      newOrder.promo.push(bundle.promo._id);
+    }
+
     return newOrder.save()
         .then((ord)=>{
 
@@ -155,8 +172,13 @@ const OrderController = {
             order:ord,
             examDescription:bundle.examDescription,
             user:user,
-            paymentOptions:bundle.source
+            paymentOptions:bundle.source,
+            totalPaid: bundle.totalAmount
           };
+
+          if(bundle.promo){
+            orderOptions.promo = bundle.promo;
+          }
           // console.log('the order options', orderOptions);
           return Emailer.purchaseConfirmation(orderOptions)
               .then((res)=>{
@@ -176,7 +198,48 @@ const OrderController = {
   //  make the request to use paypal
   //  Send back the id for success
 
-  }
+  },
+
+  createPromo: function createPromo(req){
+
+    let promo = new Promo(req.body);
+
+    return promo.save()
+        .then((pro)=>{
+          return pro;
+        }, (err)=>{
+          let newErr = {status: err.statusCode, type: err.type, message: err.message, error:true};
+          return newErr;
+        });
+  },
+
+  checkPromoCode: function checkPromoCode(req){
+    let today = moment();
+
+    return Promo.findOne({code:req.body.code})//new RegExp to check for lower or uppercase
+        .exec()
+        .then((promo)=>{
+
+          if(!promo){
+
+            let badPromo = {code:null, error: true, message:'The promotion code you have entered is invalid. Please verify the code and try again.'};
+            return badPromo;
+
+          }else if(promo.expiration && today > promo.expiration){
+
+            let badPromo = {code:promo.code, error: true, message:'The promotion code you have entered has expired. Please use a different code.'};
+            return badPromo;
+
+          }else{
+            return promo;
+          }
+        }, (err)=>{
+          let newErr = {status: err.statusCode, type: err.type, message: err.message, error:true};
+          return newErr;
+        })
+  },
+
+
 
 };
 
