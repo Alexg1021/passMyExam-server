@@ -60,10 +60,15 @@ let Emailer ={
                                 <th>Amount</th>
                                 <td>$${options.examDescription.price}</td>
                             </tr>
+                            
+                             <tr>
+                                <th>Promo Code</th>
+                                <td>${options.promo ? options.promo.code : '--'} - ${options.promo ? options.promo.description : ''} </td>
+                            </tr>
 
                             <tr class="border-top">
                                 <th>Total Paid</th>
-                                <td>$${options.examDescription.price}</td>
+                                <td>$${options.totalPaid}</td>
                             </tr>
                             </tbody>
                         </table>
