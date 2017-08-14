@@ -51,6 +51,7 @@ const OrderController = {
     return Order.findOne({_id: req.params.id})
         .populate('user')
         .populate('examDescription')
+        .populate('promo')
         .exec()
         .then((res) => {
           return res;
