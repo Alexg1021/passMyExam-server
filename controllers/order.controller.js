@@ -216,8 +216,9 @@ const OrderController = {
 
   checkPromoCode: function checkPromoCode(req){
     let today = moment();
+    let code = req.body.code.toLowerCase();
 
-    return Promo.findOne({code:req.body.code})//new RegExp to check for lower or uppercase
+    return Promo.findOne({code:code})//new RegExp to check for lower or uppercase
         .exec()
         .then((promo)=>{
 
